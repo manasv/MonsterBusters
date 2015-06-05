@@ -1,7 +1,6 @@
 #include "SDL2/SDL.h"
 
 int main(int argc, char const *argv[]){
-
 	int i;
 
 	if (SDL_Init(SDL_INIT_VIDEO) != 0){

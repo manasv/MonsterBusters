@@ -58,7 +58,7 @@ void showMatrix(Bubble ** matrix){
          
         for(i = 0 ; i < ROWS; i++){
             for( j=0 ; j< COLUMNS; j++){
-                    printf(" |%d| ",matrix[i][j]);
+                    printf(" |%d| ",(matrix[i][j]).colorCode);
             }
             printf("\n");
         }

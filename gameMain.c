@@ -10,19 +10,20 @@ int main(int argc, char const *argv[]){
 		SDL_WINDOWPOS_CENTERED,SCREEN_WIDTH,SCREEN_HEIGHT,SDL_WINDOW_OPENGL);
 	IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(renderer, 23, 0, 82, 1);
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
+
 	Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,1024);
 	bgMusic = Mix_LoadMUS("Sound/music.mp3");
 
 	allocateMatrix(&eggMatrix);
 	fillMatrix(eggMatrix);
-	showMatrix(eggMatrix);
 	background = IMG_LoadTexture(renderer,"Img/background.jpg");
 	SDL_RenderCopy(renderer, background, NULL, NULL);
 	drawEggs(renderer,eggMatrix);
+	showMatrix(eggMatrix);
 	Mix_PlayMusic(bgMusic,-1);
 
 	while(active) {

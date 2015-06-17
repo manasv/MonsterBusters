@@ -7,7 +7,7 @@
 #include "macros.h"
 
 typedef enum bool{false,true}bool;
-enum eggType{vine,pinterest,dropbox,imdb};
+enum eggType{nil,vine,pinterest,dropbox,imdb};
 
 typedef struct{
 	int x;
@@ -48,7 +48,7 @@ Egg* fillMatrix(Egg **matrix){
 	int i,j;
 	for(i=0 ; i < ROWS; i++){
 		for(j=0; j<COLUMNS; j++){
-			(*(matrix+i))[j].colorCode = rand()%4;
+			(*(matrix+i))[j].colorCode = (rand()%4)+1;
 		}
 	}
 	return *matrix;
@@ -107,8 +107,13 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix){
 			(matrix[i][j]).x = newPosition.x;
 			(matrix[i][j]).y = newPosition.y;
 
-
-			SDL_RenderCopy(renderer, texture, NULL, &newPosition);
+			if((i< 5) || (i>14) || (j<3) || (j >15)){
+				SDL_RenderCopy(renderer, texture, NULL, &newPosition);
+			}
+			else{
+				(matrix[i][j]).colorCode = nil;
+			}
+			
 			/*SDL_RenderPresent(renderer);*/ //Testing where is better to present the renderer
 		}
 	}

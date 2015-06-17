@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -26,6 +27,7 @@ SDL_Texture* texture = NULL;
 SDL_Texture* background = NULL;
 SDL_Event events;
 SDL_Renderer* renderer = NULL;
+Mix_Music* bgMusic = NULL;
 
 void allocateMatrix(Egg ***matrix){
 	int i;

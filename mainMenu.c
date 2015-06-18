@@ -12,7 +12,7 @@ SDL_Renderer* render = NULL;
 SDL_Texture* buttonTexture = NULL;
 SDL_Rect buttonRect = { 0, 0, 100, 50 }; //relativo a imagen
 SDL_Rect buttonPos = { 100, 450, 100, 50 }; //relativo a ventana
-SDL_Event mouseMove;
+SDL_Event mEvnt;
 SDL_Event keyPress;
 void drawMenu();
 
@@ -49,38 +49,30 @@ int main( int argc, char** argv ){
 	drawMenu();
 	//Infinite loop event
 	while( !quit ){
-		if( SDL_WaitEvent( &mouseMove ) ){
-			if( mouseMove.type == SDL_QUIT ){
+		if( SDL_WaitEvent( &mEvnt ) ){
+			if( mEvnt.type == SDL_QUIT ){
 				quit = 1;
 			}
-			//Mouse position and movement
-			if( mouseMove.type == SDL_MOUSEMOTION ){
-				if( mouseMove.motion.x > 100 && mouseMove.motion.x < 200 ){
-					if( mouseMove.motion.y > 450 && mouseMove.motion.y < 500 ){
-						buttonRect.y = 50;
-						drawMenu();
-						/*evaluate if there is a click once that hovering
-						 *is taking place*/
-						if( SDL_WaitEvent( &keyPress ) ){
-							if( keyPress.button.button == SDL_BUTTON_LEFT ){
-								if( keyPress.button.state == SDL_PRESSED ){
-									buttonRect.y = 100;
-									drawMenu();
-									printf(" HUY\n");
-								}
-							}
+			if( mEvnt.motion.x > 100 && mEvnt.motion.x < 200 
+			&& mEvnt.motion.y > 450 && mEvnt.motion.y < 500){
+				buttonRect.y = 50;
+				drawMenu();
+				if( SDL_WaitEvent( &keyPress ) ){
+					if( keyPress.button.button == SDL_BUTTON_LEFT ){
+						if( keyPress.button.state == SDL_PRESSED ){
+							buttonRect.y = 100;
+							drawMenu();
+							printf(" HUY\n");
 						}
-					}else{
-						buttonRect.y = 0;
-						drawMenu();
 					}
-			//mouseEvents
-				}else{
-					buttonRect.y = 0;
-					drawMenu();
 				}
 			}
+			//Mouse position and movement
+		}else{
+			buttonRect.y = 0;
+			drawMenu();
 		}
+			//mouseEvents
 	}
 }
 

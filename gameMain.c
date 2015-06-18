@@ -43,4 +43,4 @@ int main(int argc, char const *argv[]){
 	SDL_Quit();
 
 	return 0;
-}
+	}

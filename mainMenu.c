@@ -69,7 +69,7 @@ int main( int argc, char** argv ){
 					}
 			//mouseEvents
 				}else{
-					buttonRect.y = 100;
+					buttonRect.y = 0;
 					drawMenu();
 				}
 			}

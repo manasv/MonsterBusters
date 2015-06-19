@@ -14,6 +14,8 @@ int main(int argc, char const *argv[]){
 	SDL_SetRenderDrawColor(renderer, 23, 0, 82, 1);
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+    SDL_RenderSetLogicalSize(renderer, 640, 480);
 
 	Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,1024);
 	bgMusic = Mix_LoadMUS("Sound/music.mp3");
@@ -28,12 +30,21 @@ int main(int argc, char const *argv[]){
 
 	while(active) {
 		SDL_RenderPresent(renderer);
-		while( SDL_PollEvent( &events ) != 0 ){
+		if( SDL_PollEvent( &events ) != 0 ){
 			if( events.type == SDL_QUIT ){
 				active = false;
 				freeEggs(eggMatrix,ROWS);
 			}
 		}
+
+		const Uint8* press = SDL_GetKeyboardState(NULL);
+            if (press[SDL_SCANCODE_F1]) {
+            	SDL_SetWindowFullscreen(window,0);
+            }
+            else if(press[SDL_SCANCODE_F2]){
+            	SDL_SetWindowFullscreen(window,1);     
+            }
+
 	}
 	Mix_FreeMusic(bgMusic); 
 	bgMusic = NULL;

@@ -3,6 +3,7 @@
 #include <SDL2/SDL_mixer.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <time.h>
 #include "macros.h"
 
@@ -48,7 +49,7 @@ Egg* fillMatrix(Egg **matrix){
 	int i,j;
 	for(i=0 ; i < ROWS; i++){
 		for(j=0; j<COLUMNS; j++){
-			(*(matrix+i))[j].colorCode = (rand()%4)+1;
+			(matrix[i][j]).colorCode = (rand()%5);
 		}
 	}
 	return *matrix;
@@ -80,6 +81,7 @@ void freeEggs(Egg **matrix, int rows){
 
 void drawEggs(SDL_Renderer *renderer,Egg **matrix){
 	int i,j;
+	float circleEQ, radius = 200;
 
 	SDL_Rect newPosition;
 
@@ -87,6 +89,9 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix){
 		for(j=0;j<COLUMNS;j++){
 
 			switch(matrix[i][j].colorCode){
+				case nil:
+				/*texture = IMG_LoadTexture(renderer, "Img/trans.png");*/
+				break;
 				case vine:
 				texture = IMG_LoadTexture(renderer, "Img/0.png");
 				break;
@@ -107,14 +112,17 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix){
 			(matrix[i][j]).x = newPosition.x;
 			(matrix[i][j]).y = newPosition.y;
 
-			if((i< 5) || (i>14) || (j<3) || (j >15)){
+			circleEQ = pow(((matrix[i][j]).x)-(SCREEN_WIDTH/2),2) + 
+			pow(((matrix[i][j]).y)-(SCREEN_HEIGHT/2),2);
+
+			if(circleEQ > pow(radius,2)){
 				SDL_RenderCopy(renderer, texture, NULL, &newPosition);
 			}
+
 			else{
 				(matrix[i][j]).colorCode = nil;
 			}
 			
-			/*SDL_RenderPresent(renderer);*/ //Testing where is better to present the renderer
 		}
 	}
 }

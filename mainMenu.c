@@ -4,6 +4,7 @@
 #define WINDOW_W 300
 
 SDL_Window* menu_w1 = NULL;
+
 SDL_Surface* bgSurface = NULL;
 SDL_Surface* buttonSurface = NULL;
 SDL_Texture* bgTexture = NULL;
@@ -11,10 +12,11 @@ SDL_Surface* wSurface;
 SDL_Renderer* render = NULL;
 SDL_Texture* buttonTexture = NULL;
 SDL_Rect buttonRect = { 0, 0, 100, 50 }; //relativo a imagen
-SDL_Rect buttonPos = { 100, 450, 100, 50 }; //relativo a ventana
+SDL_Rect buttonPos = { 100, 450, 100, 50 }; //relativo a ventana (posicion , tamaño)
 SDL_Event mEvnt;
 SDL_Event keyPress;
 void drawMenu();
+
 
 int main( int argc, char** argv ){
 	int quit = 0;
@@ -51,7 +53,7 @@ int main( int argc, char** argv ){
 
 	//Infinite loop event
 	while( !quit ){
-		if( SDL_WaitEvent( &mEvnt ) ){
+		if( SDL_PollEvent( &mEvnt ) ){ //Do_while
 			if( mEvnt.type == SDL_QUIT ){
 				quit = 1;
 			}
@@ -61,7 +63,6 @@ int main( int argc, char** argv ){
 			//no tratando de ejecutar las dos cosas al mismo tiempo
 			if( x > 100 && x < 200 && y > 450 && y < 500){
 				buttonRect.y = 50;
-				printf("( %3.2f,%3.2f )",x,y);
 				drawMenu();
 				if( SDL_WaitEvent( &keyPress ) ){
 					if( keyPress.button.state == SDL_PRESSED && 

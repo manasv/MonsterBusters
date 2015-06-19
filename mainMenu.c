@@ -2,6 +2,9 @@
 
 #define WINDOW_H 600
 #define WINDOW_W 300
+#define STATE1 0
+#define STATE2 50
+#define STATE3 100
 
 SDL_Window* menu_w1 = NULL;
 
@@ -20,7 +23,9 @@ void drawMenu();
 
 int main( int argc, char** argv ){
 	int quit = 0;
-	float x, y;
+	float x, y, w, h;
+	w = buttonPos.w; //for later ease of use
+	h = buttonPos.h; 
 	//initializing SDL
 	if( SDL_Init(SDL_INIT_VIDEO) ){
 		printf( "SDL Sucked Balls!\n" );
@@ -57,26 +62,26 @@ int main( int argc, char** argv ){
 			if( mEvnt.type == SDL_QUIT ){
 				quit = 1;
 			}
-			x = mEvnt.motion.x; //estas dos lineas obligan a que pida 
-			y = mEvnt.motion.y; //las cordenadas del mouse primero y luego
-			//haga hover y click como algo dependiente de saber la posicion
-			//no tratando de ejecutar las dos cosas al mismo tiempo
-			if( x > 100 && x < 200 && y > 450 && y < 500){
-				buttonRect.y = 50;
+			x = mEvnt.motion.x; 
+			y = mEvnt.motion.y; 
+
+			if( x > buttonPos.x && x < buttonPos.x + w && y > buttonPos.y && y < buttonPos.y + h){
+				buttonRect.y = STATE2;
 				drawMenu();
 				if( SDL_WaitEvent( &keyPress ) ){
 					if( keyPress.button.state == SDL_PRESSED && 
 					keyPress.button.button == SDL_BUTTON_LEFT){
-						buttonRect.y = 100;
+						buttonRect.y = STATE3;
 						drawMenu();
 						printf(" HUY\n");
 					}
 				}
 			}else{
-			buttonRect.y = 0;
+			buttonRect.y = STATE1;
 			drawMenu();
 			}
-		}	//mouseEvents
+			//añadir otros botones aqui!
+		}
 	}
 }
 

@@ -66,13 +66,11 @@ int main( int argc, char** argv ){
 						}
 					}
 				}
-			}
-			//Mouse position and movement
-		}else{
+			}else{
 			buttonRect.y = 0;
 			drawMenu();
-		}
-			//mouseEvents
+			}
+		}	//mouseEvents
 	}
 }
 

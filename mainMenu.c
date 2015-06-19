@@ -18,6 +18,7 @@ void drawMenu();
 
 int main( int argc, char** argv ){
 	int quit = 0;
+	float x, y;
 	//initializing SDL
 	if( SDL_Init(SDL_INIT_VIDEO) ){
 		printf( "SDL Sucked Balls!\n" );
@@ -47,23 +48,27 @@ int main( int argc, char** argv ){
  	buttonTexture = SDL_CreateTextureFromSurface( render, buttonSurface );
 	SDL_FreeSurface( buttonSurface );
 	drawMenu();
+
 	//Infinite loop event
 	while( !quit ){
 		if( SDL_WaitEvent( &mEvnt ) ){
 			if( mEvnt.type == SDL_QUIT ){
 				quit = 1;
 			}
-			if( mEvnt.motion.x > 100 && mEvnt.motion.x < 200 
-			&& mEvnt.motion.y > 450 && mEvnt.motion.y < 500){
+			x = mEvnt.motion.x; //estas dos lineas obligan a que pida 
+			y = mEvnt.motion.y; //las cordenadas del mouse primero y luego
+			//haga hover y click como algo dependiente de saber la posicion
+			//no tratando de ejecutar las dos cosas al mismo tiempo
+			if( x > 100 && x < 200 && y > 450 && y < 500){
 				buttonRect.y = 50;
+				printf("( %3.2f,%3.2f )",x,y);
 				drawMenu();
 				if( SDL_WaitEvent( &keyPress ) ){
-					if( keyPress.button.button == SDL_BUTTON_LEFT ){
-						if( keyPress.button.state == SDL_PRESSED ){
-							buttonRect.y = 100;
-							drawMenu();
-							printf(" HUY\n");
-						}
+					if( keyPress.button.state == SDL_PRESSED && 
+					keyPress.button.button == SDL_BUTTON_LEFT){
+						buttonRect.y = 100;
+						drawMenu();
+						printf(" HUY\n");
 					}
 				}
 			}else{

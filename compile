@@ -1,4 +1,4 @@
 #!/bin/sh
 #$ -N $1 # numero de argumentos
 
-cc -o run $1 -lSDL2 -lm -lSDL2_mixer -lSDL2_image
+gcc -o run $1 -lSDL2 -lm -lSDL2_mixer -lSDL2_image

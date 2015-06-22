@@ -15,7 +15,7 @@ int main(int argc, char const *argv[]){
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-    SDL_RenderSetLogicalSize(renderer, 640, 480);
+   	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,1024);
 	bgMusic = Mix_LoadMUS("Sound/music.mp3");

@@ -8,7 +8,7 @@
 #include "macros.h"
 
 typedef enum bool{false,true}bool;
-enum eggType{nil,vine,pinterest,dropbox,imdb};
+enum eggType{nil,cthulhu,ghoulbeast,kumonga,seaserpent};
 
 typedef struct{
 	int x;
@@ -49,7 +49,7 @@ Egg* fillMatrix(Egg **matrix){
 	int i,j;
 	for(i=0 ; i < ROWS; i++){
 		for(j=0; j<COLUMNS; j++){
-			(matrix[i][j]).colorCode = (rand()%5);
+			(matrix[i][j]).colorCode = (rand()%4)+1;
 		}
 	}
 	return *matrix;
@@ -92,17 +92,17 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix){
 				case nil:
 				/*texture = IMG_LoadTexture(renderer, "Img/trans.png");*/
 				break;
-				case vine:
-				texture = IMG_LoadTexture(renderer, "Img/0.png");
+				case cthulhu:
+				texture = IMG_LoadTexture(renderer, "Img/CTHULHU.png");
 				break;
-				case pinterest:
-				texture = IMG_LoadTexture(renderer, "Img/1.png");
+				case ghoulbeast:
+				texture = IMG_LoadTexture(renderer, "Img/GHOULBEAST.png");
 				break;
-				case dropbox:
-				texture = IMG_LoadTexture(renderer, "Img/2.png");
+				case kumonga:
+				texture = IMG_LoadTexture(renderer, "Img/KUMONGA.png");
 				break;
-				case imdb:
-				texture = IMG_LoadTexture(renderer, "Img/3.png");
+				case seaserpent:
+				texture = IMG_LoadTexture(renderer, "Img/SEASERPENT.png");
 				break;
 			} 
 			newPosition.x = assignPosition(i,j);
@@ -118,7 +118,6 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix){
 			if(circleEQ > pow(radius,2)){
 				SDL_RenderCopy(renderer, texture, NULL, &newPosition);
 			}
-
 			else{
 				(matrix[i][j]).colorCode = nil;
 			}
@@ -131,10 +130,10 @@ int assignPosition(int rowNumber, int columnNumber){
 	int result;
 
 	if(rowNumber%2 == 0){
-		result = ((EGG_TILE_SIZE/2)+10)*((rowNumber+1)%2)+(columnNumber*EGG_TILE_SIZE);
+		result = ((EGG_TILE_SIZE/2)+(SCREEN_WIDTH*0.015))*((rowNumber+1)%2)+(columnNumber*EGG_TILE_SIZE);
 	}
 	else{
-		result = 6+((EGG_TILE_SIZE/2))*((rowNumber+1)%2)+(columnNumber*EGG_TILE_SIZE);
+		result = (SCREEN_WIDTH*0.01)+((EGG_TILE_SIZE/2))*((rowNumber+1)%2)+(columnNumber*EGG_TILE_SIZE);
 	}
 
 	return result;

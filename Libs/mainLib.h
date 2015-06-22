@@ -22,13 +22,18 @@ void showMatrix(Egg **matrix);
 void freeEggs(Egg **matrix, int rows);
 void drawEggs(SDL_Renderer *renderer,Egg **matrix);
 int assignPosition(int rowNumber, int columnNumber);
+void drawTest();
+void reDraw();
 
 SDL_Window* window = NULL;
 SDL_Texture* texture = NULL;
 SDL_Texture* background = NULL;
+SDL_Texture* cubeTexture = NULL;
 SDL_Event events;
 SDL_Renderer* renderer = NULL;
 Mix_Music* bgMusic = NULL;
+SDL_Surface* centerCube = NULL;
+SDL_Rect cubePos;
 
 void allocateMatrix(Egg ***matrix){
 	int i;
@@ -137,4 +142,23 @@ int assignPosition(int rowNumber, int columnNumber){
 	}
 
 	return result;
+}
+
+void drawTest(){
+	centerCube = SDL_CreateRGBSurface(0, SCREEN_WIDTH/20, SCREEN_WIDTH/20, 32, 0, 0, 0, 0);
+	SDL_FillRect(centerCube, NULL, SDL_MapRGB(centerCube->format, 122, 122, 122));
+	cubeTexture = SDL_CreateTextureFromSurface(renderer,centerCube);
+
+	 cubePos.x= SCREEN_WIDTH/2;
+	 cubePos.y= SCREEN_HEIGHT/2;
+	 cubePos.h= SCREEN_WIDTH/20;
+	 cubePos.w= SCREEN_WIDTH/20;
+
+	 SDL_RenderCopy(renderer, cubeTexture, NULL, &cubePos);
+}
+
+void reDraw(){
+	SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, cubeTexture, NULL, &cubePos);
+    SDL_RenderPresent(renderer);
 }

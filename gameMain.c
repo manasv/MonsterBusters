@@ -2,7 +2,7 @@
 
 int main(int argc, char const *argv[]){
 
-	bool active = true;
+	bool isRunning = true;
 	
 	sdlStartup(); //Startup SDL Subsystems
 	sdlMediaStartup(); //Startup SDL Media Resources
@@ -11,10 +11,10 @@ int main(int argc, char const *argv[]){
 	drawEggs(renderer,matrix); //Draw Eggs on renderer
 	showMatrix(matrix); //Show Matrix on Console, for testing purposes
 
-	while(active){
-		if( SDL_PollEvent( &events ) != 0 ){
-			if( events.type == SDL_QUIT ){
-				active = false;
+	while(isRunning){
+		if( SDL_PollEvent(&events) != 0 ){
+			if(events.type == SDL_QUIT){
+				isRunning = false;
 			}
 		}
 		SDL_RenderPresent(renderer);

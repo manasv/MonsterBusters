@@ -1,6 +1,6 @@
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
-#define GAME_WINDOW_TITLE "Monster Busters"
+#define GAME_WINDOW_TITLE "Monster Buster"
 #define EGG_TILE_SIZE 32
 #define ROWS (SCREEN_HEIGHT/EGG_TILE_SIZE)
 #define COLUMNS (SCREEN_WIDTH/EGG_TILE_SIZE)-1

@@ -15,19 +15,12 @@ int main(int argc, char const *argv[]){
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-   	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,1024);
 	bgMusic = Mix_LoadMUS("Sound/music.mp3");
 
-	allocateMatrix(&eggMatrix);
-	fillMatrix(eggMatrix);
-	background = IMG_LoadTexture(renderer,"Img/background.jpg");
-	SDL_RenderCopy(renderer, background, NULL, NULL);
-	drawEggs(renderer,eggMatrix);
-	drawTest();
-	showMatrix(eggMatrix);
-	Mix_PlayMusic(bgMusic,-1);
+
 
 	while(active) {
 		SDL_RenderPresent(renderer);
@@ -38,28 +31,28 @@ int main(int argc, char const *argv[]){
 			}
 		}
 
-		const Uint8* press = SDL_GetKeyboardpress(NULL);
-            if (press[SDL_SCANCODE_F1]) {
-            	SDL_SetWindowFullscreen(window,0);
-            }
-            else if(press[SDL_SCANCODE_F2]){
-            	SDL_SetWindowFullscreen(window,1);     
-            }
-            else if (press[SDL_SCANCODE_S]||press[SDL_SCANCODE_DOWN]) {
- 				cubePos.y-=4; 
-            }else if(press[SDL_SCANCODE_A]||press[SDL_SCANCODE_LEFT]){
-                cubePos.x-=4;            
-            }else if(press[SDL_SCANCODE_D]||press[SDL_SCANCODE_RIGHT]){
-                cubePos.x+=4;                
-            }else if(press[SDL_SCANCODE_W]||press[SDL_SCANCODE_UP]) {
-                cubePos.y+=4;  
-            }
-             
-            reDraw();
-                         
-            }   
+		const Uint8* press = SDL_GetKeyboardState(NULL);
+		if (press[SDL_SCANCODE_F1]) {
+			SDL_SetWindowFullscreen(window,0);
+		}
+		else if(press[SDL_SCANCODE_F2]){
+			SDL_SetWindowFullscreen(window,1);     
+		}
+		else if (press[SDL_SCANCODE_S]||press[SDL_SCANCODE_DOWN]) {
+			cubePos.y-=4; 
+		}else if(press[SDL_SCANCODE_A]||press[SDL_SCANCODE_LEFT]){
+			cubePos.x-=4;            
+		}else if(press[SDL_SCANCODE_D]||press[SDL_SCANCODE_RIGHT]){
+			cubePos.x+=4;                
+		}else if(press[SDL_SCANCODE_W]||press[SDL_SCANCODE_UP]) {
+			cubePos.y+=4;  
+		}
+
+		reDraw();
 
 	}
+	   
+
 	Mix_FreeMusic(bgMusic); 
 	bgMusic = NULL;
 	SDL_DestroyWindow(window);
@@ -68,4 +61,7 @@ int main(int argc, char const *argv[]){
 	SDL_Quit();
 
 	return 0;
-	}
+
+}
+
+

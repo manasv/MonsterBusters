@@ -63,33 +63,33 @@ int main( int argc, char** argv ){
 	render = SDL_CreateRenderer( menu_w1, -1, SDL_RENDERER_ACCELERATED );	
 	SDL_SetRenderDrawColor( render, 0x20, 0x20, 0x20, 0xFF );
 	wSurface = SDL_GetWindowSurface( menu_w1 );
-	bgSurface = IMG_Load( "./Img/MONSTER_BUSTER.jpg" );
+	bgSurface = IMG_Load( "./Img/background.jpg" );
 	SDL_BlitSurface( bgSurface, NULL, wSurface, NULL );
  	SDL_UpdateWindowSurface( menu_w1 );
 	bgTexture = SDL_CreateTextureFromSurface( render, bgSurface );
 	SDL_FreeSurface( bgSurface );
-	buttonSurface = IMG_Load( "./Img/button01.png" );
+	buttonSurface = IMG_Load( "./Img/START.png" );
  	buttonTexture = SDL_CreateTextureFromSurface( render, buttonSurface );
 	SDL_FreeSurface( buttonSurface );
-	buttonSurface = IMG_Load( "./Img/button02.png" );
+	buttonSurface = IMG_Load( "./Img/EASY.png" );
 	buttonTexture2 = SDL_CreateTextureFromSurface( render, buttonSurface );
 	SDL_FreeSurface( buttonSurface );
-	buttonSurface = IMG_Load( "./Img/button03.png" );
+	buttonSurface = IMG_Load( "./Img/NORMAL.png" );
 	buttonTexture3 = SDL_CreateTextureFromSurface( render, buttonSurface );
 	SDL_FreeSurface( buttonSurface );
-	buttonSurface = IMG_Load( "./Img/button04.png" );
+	buttonSurface = IMG_Load( "./Img/HARD.png" );
 	buttonTexture4 = SDL_CreateTextureFromSurface( render, buttonSurface );
 	drawMenu();
 
 	//Infinite loop event
 	while( !quit ){
-		if( SDL_PollEvent( &mEvnt ) ){ //Do_while
+		if( SDL_WaitEvent( &mEvnt ) ){ //Do_while
 			if( mEvnt.type == SDL_QUIT ){
 				quit = 1;
 			}
-		x = mEvnt.motion.x; 
-		y = mEvnt.motion.y;
-		//SDL_EventState( SDL_MOUSEMOTION, SDL_IGNORE );
+			x = mEvnt.motion.x; 
+			y = mEvnt.motion.y;
+		}
 		if( x > buttonPos.x && x < buttonPos.x + w && y > buttonPos.y && y < buttonPos.y + h){
 				buttonRect.y = STATE2;
 				drawMenu();
@@ -112,11 +112,12 @@ int main( int argc, char** argv ){
 					if( keyPress.button.state == SDL_PRESSED &&
 					keyPress.button.button == SDL_BUTTON_LEFT){
 						buttonRect2.y = STATE3;
-						drawMenu();
 						printf("SHIET\n");
 						flag[0] =  1; flag[1] = 0; flag[2] = 0;
 					}
 				}
+				drawMenu();
+
 			}else if( !flag[0] ){
 				buttonRect2.y = STATE1;
 				drawMenu();
@@ -154,7 +155,7 @@ int main( int argc, char** argv ){
 				drawMenu();
 			}
 			//añadir otros botones aqui!
-		}
+	//	}
 	}
 }
 
@@ -162,8 +163,8 @@ void drawMenu( void ){
 	SDL_RenderClear( render );
 	SDL_RenderCopy( render, bgTexture, NULL, NULL );
 	SDL_RenderCopy( render, buttonTexture, &buttonRect,  &buttonPos);
-	SDL_RenderCopy( render, buttonTexture, &buttonRect2, &buttonPos2 );
-	SDL_RenderCopy( render, buttonTexture, &buttonRect3, &buttonPos3 );
-	SDL_RenderCopy( render, buttonTexture, &buttonRect4, &buttonPos4 );
+	SDL_RenderCopy( render, buttonTexture2, &buttonRect2, &buttonPos2 );
+	SDL_RenderCopy( render, buttonTexture3, &buttonRect3, &buttonPos3 );
+	SDL_RenderCopy( render, buttonTexture4, &buttonRect4, &buttonPos4 );
 	SDL_RenderPresent( render ); 
 }

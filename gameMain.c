@@ -2,56 +2,24 @@
 
 int main(int argc, char const *argv[]){
 
-	Egg **eggMatrix = NULL;
 	bool active = true;
+	
+	sdlStartup(); //Startup SDL Subsystems
+	sdlMediaStartup(); //Startup SDL Media Resources
+	allocateMatrix(&matrix); //Allocate Memory Space For The Matrix
+	fillMatrix(matrix); //Fill Matrix with identifiers for Egg Types
+	drawEggs(renderer,matrix); //Draw Eggs on renderer
+	showMatrix(matrix); //Show Matrix on Console, for testing purposes
 
-	SDL_Init(SDL_INIT_VIDEO);
-	window = SDL_CreateWindow("Monster Busters",SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,SCREEN_WIDTH,SCREEN_HEIGHT,SDL_WINDOW_OPENGL);
-	IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
-
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	SDL_SetRenderDrawColor(renderer, 23, 0, 82, 1);
-	SDL_RenderClear(renderer);
-	SDL_RenderPresent(renderer);
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-	Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,1024);
-	bgMusic = Mix_LoadMUS("Sound/music.mp3");
-
-	allocateMatrix(&eggMatrix);
-	fillMatrix(eggMatrix);
-	background = IMG_LoadTexture(renderer,"Img/background.jpg");
-	SDL_RenderCopy(renderer, background, NULL, NULL);
-	drawEggs(renderer,eggMatrix);
-	showMatrix(eggMatrix);
-	Mix_PlayMusic(bgMusic,-1);
-
-	while(active) {
-		SDL_RenderPresent(renderer);
+	while(active){
 		if( SDL_PollEvent( &events ) != 0 ){
 			if( events.type == SDL_QUIT ){
 				active = false;
-				freeEggs(eggMatrix,ROWS);
 			}
 		}
-
-		const Uint8* press = SDL_GetKeyboardState(NULL);
-		if (press[SDL_SCANCODE_F1]) {
-			SDL_SetWindowFullscreen(window,0);
-		}
-		else if(press[SDL_SCANCODE_F2]){
-			SDL_SetWindowFullscreen(window,1);     
-		}
-
+		SDL_RenderPresent(renderer);
 	}
-	Mix_FreeMusic(bgMusic); 
-	bgMusic = NULL;
-	SDL_DestroyWindow(window);
-	Mix_Quit();
-	IMG_Quit();
-	SDL_Quit();
 
+	closeALL();
 	return 0;
 }

@@ -16,6 +16,9 @@ typedef struct{
 	int colorCode;
 }Egg;
 
+bool sdlStartup();
+bool sdlMediaStartup();
+void closeALL();
 void allocateMatrix(Egg ***matrix);
 Egg* fillMatrix(Egg **matrix);
 void showMatrix(Egg **matrix);
@@ -23,12 +26,98 @@ void freeEggs(Egg **matrix, int rows);
 void drawEggs(SDL_Renderer *renderer,Egg **matrix);
 int assignPosition(int rowNumber, int columnNumber);
 
+Egg **matrix = NULL;
 SDL_Window* window = NULL;
 SDL_Texture* texture = NULL;
 SDL_Texture* background = NULL;
 SDL_Event events;
 SDL_Renderer* renderer = NULL;
 Mix_Music* bgMusic = NULL;
+
+bool sdlStartup(){
+
+	bool success = true;
+
+
+	if( SDL_Init( SDL_INIT_VIDEO ) < 0 ){
+		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+		success = false;
+	}
+	else{
+		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear" ) ){
+			printf( "Warning: Linear texture filtering not enabled!" );
+		}
+
+		window = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_CENTERED, 
+			SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
+		if( window == NULL ){
+			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+			success = false;
+		}
+		else{
+			renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+			if( renderer == NULL ){
+				printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+				success = false;
+			}
+			else{
+				SDL_SetRenderDrawColor(renderer, 23, 0, 82, 1);
+				
+				int imgFlags = IMG_INIT_JPG|IMG_INIT_PNG;
+				if( !( IMG_Init( imgFlags ) & imgFlags ) ){
+					printf( "SDL_image Error: %s\n", IMG_GetError() );
+					success = false;
+				}
+
+				if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 ){
+					printf( "SDL_mixer Error: %s\n", Mix_GetError() );
+					success = false;
+				}
+			}
+		}
+	}
+
+	return success;
+}
+
+bool sdlMediaStartup(){
+	bool success;
+
+	background = IMG_LoadTexture(renderer,"Img/background.jpg");
+	SDL_RenderCopy(renderer, background, NULL, NULL);
+
+	bgMusic = Mix_LoadMUS("Sound/music.mp3");
+	if( bgMusic == NULL ){
+		printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
+		success = false;
+	}
+	Mix_PlayMusic(bgMusic,-1);
+
+	return success;
+}
+
+void closeALL(){
+	freeEggs(matrix,ROWS);
+
+	SDL_DestroyTexture(texture);
+	SDL_DestroyTexture(background);
+	texture = NULL;
+	background = NULL;
+
+	Mix_CloseAudio();
+	Mix_FreeMusic(bgMusic); 
+	bgMusic = NULL;
+
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	renderer = NULL;
+	window = NULL;
+
+	Mix_Quit();
+	IMG_Quit();
+	SDL_Quit();
+
+}
 
 void allocateMatrix(Egg ***matrix){
 	int i;
@@ -71,10 +160,12 @@ void showMatrix(Egg **matrix){
 
 void freeEggs(Egg **matrix, int rows){
 	int i;
+
 	for(i=0;i<rows;i++){
 		free(matrix[i]);
 		matrix[i] = NULL;
 	}
+
 	free(matrix);
 	matrix = NULL;
 }
@@ -121,7 +212,8 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix){
 			else{
 				(matrix[i][j]).colorCode = nil;
 			}
-			
+
+			SDL_DestroyTexture(texture);
 		}
 	}
 }

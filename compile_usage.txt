@@ -1,6 +1,0 @@
-Compile es basicamente un atajo para compilar y probar los archivos
-se usa de la siguiente manera:
-
-./compile nombre_de_archivo.c
-
-y les entregara un archivo llamado "run" listo para probar!

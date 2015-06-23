@@ -34,7 +34,7 @@ void drawMenu();
 int main( int argc, char** argv ){
 	int quit = 0;
 	int dificulty = 0, flag[3] = { 0, 0, 0 };
-	float x, y, w, h, w2, h2, w3, h3, w4, h4;
+	int x, y, w, h, w2, h2, w3, h3, w4, h4;
 	w = buttonPos.w; //for later ease of use
 	h = buttonPos.h;
 	w2 = buttonPos2.w;
@@ -89,73 +89,61 @@ int main( int argc, char** argv ){
 			}
 			x = mEvnt.motion.x; 
 			y = mEvnt.motion.y;
-		}
+		} // instead of another event, I just use SDL_GetMouseState and SDL_button!
+		SDL_PumpEvents();
 		if( x > buttonPos.x && x < buttonPos.x + w && y > buttonPos.y && y < buttonPos.y + h){
-				buttonRect.y = STATE2;
-				drawMenu();
-					if( SDL_WaitEvent( &keyPress ) ){
-						if( keyPress.button.state == SDL_PRESSED && 
-						keyPress.button.button == SDL_BUTTON_LEFT){
-							buttonRect.y = STATE3;
-							drawMenu();
-							printf(" HUY\n");
-					}
-				}
-			}else{
-				buttonRect.y = STATE1;
-				drawMenu();
+			buttonRect.y = STATE2;
+			drawMenu();
+			if( SDL_GetMouseState( &x, &y ) && SDL_BUTTON(SDL_BUTTON_LEFT) ){
+				buttonRect.y = STATE3;
+				printf(" HUY\n");
 			}
-			if( x > buttonPos2.x && x < buttonPos2.x + w2 && y > buttonPos2.y && y < buttonPos2.y + h2 ){
-				buttonRect2.y = STATE2;
-				drawMenu();
-				if( SDL_WaitEvent( &keyPress ) ){
-					if( keyPress.button.state == SDL_PRESSED &&
-					keyPress.button.button == SDL_BUTTON_LEFT){
-						buttonRect2.y = STATE3;
-						printf("SHIET\n");
-						flag[0] =  1; flag[1] = 0; flag[2] = 0;
-					}
-				}
-				drawMenu();
-
-			}else if( !flag[0] ){
-				buttonRect2.y = STATE1;
-				drawMenu();
+			drawMenu();
+		}else{
+			buttonRect.y = STATE1;
+			drawMenu();
+		}
+		if( x > buttonPos2.x && x < buttonPos2.x + w2 && y > buttonPos2.y && y < buttonPos2.y + h2 ){
+			buttonRect2.y = STATE2;
+			drawMenu();
+			if( SDL_GetMouseState( &x, &y ) && SDL_BUTTON( SDL_BUTTON_LEFT ) ){
+				buttonRect2.y = STATE3;
+				printf("SHIET\n");
+				flag[0] =  1; flag[1] = 0; flag[2] = 0;
 			}
-			if( x > buttonPos3.x && x < buttonPos3.x + w3 && y > buttonPos3.y && y < buttonPos3.y + h3 ){
-				buttonRect3.y = STATE2;
-				drawMenu();
-				if( SDL_WaitEvent( &keyPress ) ){
-					if( keyPress.button.state = SDL_PRESSED &&
-						keyPress.button.button == SDL_BUTTON_LEFT ){
-							buttonRect3.y = STATE3;
-							drawMenu();
-							printf( "DAYUM\n" );
-							flag[0] = 0; flag[1] = 1; flag[2] = 0;
-					}
-				}
-			}else if( !flag[1] ){
-				buttonRect3.y = STATE1;
-				drawMenu();
+			drawMenu();
+		}else if( !flag[0] ){
+			buttonRect2.y = STATE1;
+			drawMenu();
+		}
+		if( x > buttonPos3.x && x < buttonPos3.x + w3 && y > buttonPos3.y && y < buttonPos3.y + h3 ){
+			buttonRect3.y = STATE2;
+			drawMenu();
+			if( SDL_GetMouseState(  &x, &y ) && SDL_BUTTON( SDL_BUTTON_LEFT ) ){
+					buttonRect3.y = STATE3;
+					printf( "DAYUM\n" );
+					flag[0] = 0; flag[1] = 1; flag[2] = 0;
 			}
-			if( x > buttonPos4.x && x < buttonPos4.x + w4 && y > buttonPos4.y && y < buttonPos4.y + h4 ){
-				buttonRect4.y = STATE2;
-				drawMenu();
-				if( SDL_WaitEvent( &keyPress ) ){
-					if( keyPress.button.state == SDL_PRESSED &&
-						keyPress.button.button == SDL_BUTTON_LEFT ){
-							buttonRect4.y = STATE3;
-							drawMenu();
-							printf( "FRIED CHICKEN NIGGA\n" );
-							flag[0] = 0; flag[1] = 0; flag[2] =1;
-					}
-				}
-			}else if( !flag[2] ){
-				buttonRect4.y = STATE1;
-				drawMenu();
+			drawMenu();
+		}else if( !flag[1] ){
+			buttonRect3.y = STATE1;
+			drawMenu();
+		}
+		if( x > buttonPos4.x && x < buttonPos4.x + w4 && y > buttonPos4.y && y < buttonPos4.y + h4 ){
+			buttonRect4.y = STATE2;
+			drawMenu();
+			if( SDL_GetMouseState( &x, &y ) && SDL_BUTTON( SDL_BUTTON_LEFT ) ){
+				buttonRect4.y = STATE3;
+				printf( "FRIED CHICKEN NIGGA\n" );
+				flag[0] = 0; flag[1] = 0; flag[2] =1;
 			}
+			drawMenu();
+		}else if( !flag[2] ){
+			buttonRect4.y = STATE1;
+			drawMenu();
+		}
 			//añadir otros botones aqui!
-	//	}
+//		}
 	}
 }
 

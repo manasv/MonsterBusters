@@ -1,37 +1,77 @@
 #include <stdio.h>
-#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 #include "Libs/mainLib.h"
+#include "Libs/libget.h" // getint getstr getfloat
 
 SDL_Event keyPress;
 SDL_Window* w1 = NULL;
 
 typedef struct{
-	char* player;
-	unsigned int score;
-}highscore;
+	char* name;
+	int score;
+}player;
 
 FILE* fr; //for reading
 FILE* fw; //for writing
 
 int getScore();
-highscore* fillScores();
+player* fillScores();
+void printTable( player* prntTable );
 
 int main( int argc, char** argv ){
-	highscore player1;
+	int i = 9, aux;
+	char* staux;
+	player player1;
+	player* highScore;
+
 	SDL_Init( SDL_INIT_EVENTS | SDL_INIT_VIDEO);
 	w1 = SDL_CreateWindow( "Score", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 500, 500, 0 );
-	fr = fopen("score.t", "rb");
-	if( fr == EOF ){
+	fr = fopen("score.t", "r+");
+	if( fr == NULL ){
+		highScore = fillScores();	
+	}else{           
+		highScore = malloc( sizeof( player ) * 10 );
+		for( i = 0; i < 10; i++ ){
+			highScore[i].name = malloc( 10 );
+			fread( highScore[i].name, 10, 1, fr );
+			fread( &highScore[i].score, sizeof(int)*10, 1, fr);
+			//se lee por variable y por los miembro de estrcutura
+		}
+		fread( highScore, sizeof( player ) * 10, 10, fr );
 		fclose( fr );
-		fw = fopen( "score.t", "wb" );
-
+		printTable( highScore );
 	}
-	highscore* playerArray = fillScores();
 	player1.score = getScore();
+	//score sorting
+	if( player1.score > highScore[9].score){
+		highScore[9].score = player1.score;
+		for( i = 9; i > 0; i-- ){
+			if( highScore[i].score > highScore[ i - 1 ].score  ){
+				aux = highScore[ i - 1 ].score;
+				staux = highScore[ i - 1 ].name;
+				highScore[ i - 1 ].score = highScore[i].score;
+				highScore[ i - 1 ].name = highScore[i].name;
+				highScore[i].score = aux;
+				highScore[i].name = staux;
+			}else break;
+		}
+		printf("Nuevo HighScore! Ingrese su nombre: ");
+		highScore[i].name = getstr();
+	}
+	//ends sorting
+	printTable( highScore );
+	fw = fopen( "score.t", "w+" );
+	for( i = 0; i < 10; i++ ){
+		fwrite( highScore[i].name, 10, 1, fw);
+		fwrite( &highScore[i].score, sizeof(int)*10, 1, fw);
+	}
+	fclose( fw );
+	return 0;
 }
 
 int getScore(){
-	highscore p1 = { "aa", 0 };
+	player p1 = { "aa", 0 };
 	int quit = 0;
 	while( !quit ){
 		if( SDL_WaitEvent( &keyPress ) ){
@@ -52,13 +92,19 @@ int getScore(){
 	return p1.score;
 }
 
-highscore* fillScores(){
-	int i;
-	highscore* array = malloc( sizeof(highscore) * 10 );
-	for( i = 0; i < 10; i++ ){
-		array[i].player = "emmanuel";
+player* fillScores(){
+	int i; char* aux;
+	player* array = malloc( sizeof(player) * 10 );
+	for( i = 9; i >= 0; i-- ){
+		array[i].name = "emmanuel";
 		array[i].score = 0;
-		printf( "%s, score: %d\n",array[i].player, array[i].score );
 	}
 	return array;
+}
+
+void printTable( player* prntTable ){
+	int i; char* aux;
+	for( i = 0; i  < 9; i++ ){
+		printf("%s -- score: %d\n", prntTable[i].name, prntTable[i].score);
+	}
 }

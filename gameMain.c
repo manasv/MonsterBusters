@@ -9,6 +9,7 @@ int main(int argc, char const *argv[]){
 	allocateMatrix(&matrix); //Allocate Memory Space For The Matrix
 	fillMatrix(matrix); //Fill Matrix with identifiers for Egg Types
 	drawEggs(renderer,matrix); //Draw Eggs on renderer
+	drawAntiEgg();
 	showMatrix(matrix); //Show Matrix on Console, for testing purposes
 
 	while(isRunning){
@@ -16,8 +17,11 @@ int main(int argc, char const *argv[]){
 			if(events.type == SDL_QUIT){
 				isRunning = false;
 			}
+			moveAntiEggEvent();
 		}
-		SDL_RenderPresent(renderer);
+		if(status == true){
+			SDL_RenderPresent(renderer);
+		}
 	}
 
 	closeALL();

@@ -25,14 +25,18 @@ void showMatrix(Egg **matrix);
 void freeEggs(Egg **matrix, int rows);
 void drawEggs(SDL_Renderer *renderer,Egg **matrix);
 int assignPosition(int rowNumber, int columnNumber);
+void drawAntiEgg();
+void moveAntiEggEvent();
+void reDraw();
 
 Egg **matrix = NULL;
-SDL_Window* window = NULL;
-SDL_Texture* texture = NULL;
-SDL_Texture* background = NULL;
+SDL_Window *window = NULL;
 SDL_Event events;
-SDL_Renderer* renderer = NULL;
-Mix_Music* bgMusic = NULL;
+SDL_Texture *texture = NULL, *background = NULL, *eggDestroyer = NULL;
+SDL_Renderer *renderer = NULL;
+Mix_Music *bgMusic = NULL;
+SDL_Rect antiEggPos;
+bool status = true;
 
 bool sdlStartup(){
 
@@ -229,4 +233,40 @@ int assignPosition(int rowNumber, int columnNumber){
 	}
 
 	return result;
+}
+
+void drawAntiEgg(){
+	eggDestroyer = IMG_LoadTexture(renderer, "Img/F.png");
+
+	antiEggPos.x= SCREEN_WIDTH/2;
+    antiEggPos.y= SCREEN_HEIGHT/2;
+    antiEggPos.w= EGG_TILE_SIZE;
+    antiEggPos.h= EGG_TILE_SIZE;
+
+    SDL_RenderCopy(renderer, eggDestroyer, NULL, &antiEggPos);
+}
+
+void moveAntiEggEvent(){
+	if(status == true){
+		if( events.type == SDL_KEYDOWN && events.key.repeat == 0){
+        switch( events.key.keysym.sym ){
+            case SDLK_UP: antiEggPos.y -= 16; break;
+            case SDLK_DOWN: antiEggPos.y += 16; break;
+            case SDLK_LEFT: antiEggPos.x -= 16; break;
+            case SDLK_RIGHT: antiEggPos.x += 16; break;
+        	}
+        	status = false;
+    	}
+	}
+	if(status == false){
+		reDraw();	
+	}
+}
+
+void reDraw(){
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, background, NULL, NULL);
+    drawEggs(renderer,matrix);
+    SDL_RenderCopy(renderer, eggDestroyer, NULL, &antiEggPos);
+    status = true;
 }

@@ -38,11 +38,11 @@ int main( int argc, char** argv ){
 			fread( &highScore[i].score, sizeof(int)*10, 1, fr);
 			//se lee por variable y por los miembro de estrcutura
 		}
-		fread( highScore, sizeof( player ) * 10, 10, fr );
 		fclose( fr );
 		printTable( highScore );
 	}
 	player1.score = getScore();
+	SDL_DestroyWindow( w1 );
 	//score sorting
 	if( player1.score > highScore[9].score){
 		highScore[9].score = player1.score;
@@ -51,7 +51,7 @@ int main( int argc, char** argv ){
 				aux = highScore[ i - 1 ].score;
 				staux = highScore[ i - 1 ].name;
 				highScore[ i - 1 ].score = highScore[i].score;
-				highScore[ i - 1 ].name = highScore[i].name;
+				highScore[ i - 1 ].name =  highScore[i].name;
 				highScore[i].score = aux;
 				highScore[i].name = staux;
 			}else break;
@@ -61,7 +61,7 @@ int main( int argc, char** argv ){
 	}
 	//ends sorting
 	printTable( highScore );
-	fw = fopen( "score.t", "w+" );
+	fw = fopen( "score.t", "wb" );
 	for( i = 0; i < 10; i++ ){
 		fwrite( highScore[i].name, 10, 1, fw);
 		fwrite( &highScore[i].score, sizeof(int)*10, 1, fw);
@@ -96,7 +96,8 @@ player* fillScores(){
 	int i; char* aux;
 	player* array = malloc( sizeof(player) * 10 );
 	for( i = 9; i >= 0; i-- ){
-		array[i].name = "emmanuel";
+		array[i].name = malloc( 10 );
+		array[i].name = "";
 		array[i].score = 0;
 	}
 	return array;
@@ -104,7 +105,7 @@ player* fillScores(){
 
 void printTable( player* prntTable ){
 	int i; char* aux;
-	for( i = 0; i  < 9; i++ ){
+	for( i = 0; i  < 10; i++ ){
 		printf("%s -- score: %d\n", prntTable[i].name, prntTable[i].score);
 	}
 }

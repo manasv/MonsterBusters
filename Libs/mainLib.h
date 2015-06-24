@@ -36,7 +36,7 @@ SDL_Texture *texture = NULL, *background = NULL, *eggDestroyer = NULL;
 SDL_Renderer *renderer = NULL;
 Mix_Music *bgMusic = NULL;
 SDL_Rect antiEggPos;
-bool status = true;
+bool pause = false;
 
 bool sdlStartup(){
 
@@ -247,7 +247,7 @@ void drawAntiEgg(){
 }
 
 void moveAntiEggEvent(){
-	if(status == true){
+	if(pause == false){
 		if( events.type == SDL_KEYDOWN && events.key.repeat == 0){
         switch( events.key.keysym.sym ){
             case SDLK_UP: antiEggPos.y -= 16; break;
@@ -255,10 +255,10 @@ void moveAntiEggEvent(){
             case SDLK_LEFT: antiEggPos.x -= 16; break;
             case SDLK_RIGHT: antiEggPos.x += 16; break;
         	}
-        	status = false;
+        	pause = true;
     	}
 	}
-	if(status == false){
+	if(pause == true){
 		reDraw();	
 	}
 }
@@ -268,5 +268,5 @@ void reDraw(){
     SDL_RenderCopy(renderer, background, NULL, NULL);
     drawEggs(renderer,matrix);
     SDL_RenderCopy(renderer, eggDestroyer, NULL, &antiEggPos);
-    status = true;
+    pause = false;
 }

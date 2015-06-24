@@ -19,7 +19,7 @@ int main(int argc, char const *argv[]){
 			}
 			moveAntiEggEvent();
 		}
-		if(status == true){
+		if(pause == false){
 			SDL_RenderPresent(renderer);
 		}
 	}

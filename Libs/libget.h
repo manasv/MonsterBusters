@@ -58,3 +58,19 @@ char* getstr(){
 	str[i+1] = '\0';
 	return str;
 }
+
+char* getname(){ //ligeramente modificada para no permitir espacios!
+	int i, lim = 10;
+	char* str = malloc( lim );
+	for(i = 0; i < lim; i++){
+		str[i] = getchar();
+		if(str[i] == '\n' && i > 0){
+			str[i] = '\0';
+			break;
+		}else if( str[i] == 32){
+			str[i] = '_';
+		}
+	}
+	str[i+1] = '\0';
+	return str;
+}

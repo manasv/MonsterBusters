@@ -73,6 +73,10 @@ int main( int argc, char** argv ){
 		fwrite( &highScore[i].score, sizeof(int), 1, fwb);
 	}
 	fclose( fw );
+	fclose( fwb );
+	free( highScore );
+	Mix_Quit();
+	SDL_Quit();
 	return 0;
 }
 

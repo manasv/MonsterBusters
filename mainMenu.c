@@ -78,7 +78,6 @@ int main( int argc, char** argv ){
 			x = mEvnt.button.x; 
 			y = mEvnt.button.y;
 		} // instead of another event, I just use SDL_GetMouseState and SDL_button!
-		SDL_PumpEvents();
 		if( x > buttonPos.x && x < buttonPos.x + w && y > buttonPos.y && y < buttonPos.y + h){
 			buttonRect.y = STATE2;
 			if( mEvnt.button.button == SDL_BUTTON_LEFT && mEvnt.button.state == SDL_PRESSED ){
@@ -148,12 +147,12 @@ int main( int argc, char** argv ){
 void initMenu(){
 	
 	menu_w1 = SDL_CreateWindow(
-	"Menu",
-	SDL_WINDOWPOS_UNDEFINED,
-	SDL_WINDOWPOS_UNDEFINED,
-	WINDOW_W,
-	WINDOW_H,
-	SDL_WINDOW_BORDERLESS 
+		"Menu",
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		WINDOW_W,
+		WINDOW_H,
+		SDL_WINDOW_BORDERLESS 
 	);
 
 	render = SDL_CreateRenderer( menu_w1, -1, SDL_RENDERER_ACCELERATED );	

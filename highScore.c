@@ -20,8 +20,12 @@ FILE* frb; FILE* fwb; //for reading and writing binary
 int getScore();
 player* fillScores();
 void printTable( player* prntTable );
+player* sortHighScore( player player1, player* highScore );
 
-int main( int argc, char** argv ){
+//cambiar esto a main si se necesita generar un highscore
+//antes de implementarlo en el juego!
+
+int testmain( int argc, char** argv ){
 	int i = 9, aux;
 	char* staux = malloc( 10 );
 	player player1;
@@ -49,21 +53,7 @@ int main( int argc, char** argv ){
 	player1.score = getScore();
 	SDL_DestroyWindow( w1 );
 	//score sorting
-	if( player1.score > highScore[9].score){
-		highScore[9].score = player1.score;
-		for( i = 9; i > 0; i-- ){
-			if( highScore[i].score > highScore[ i - 1 ].score  ){
-				aux = highScore[ i - 1 ].score;
-				staux = highScore[ i - 1 ].name;
-				highScore[ i - 1 ].score = highScore[i].score;
-				highScore[ i - 1 ].name =  highScore[i].name;
-				highScore[i].score = aux;
-				highScore[i].name = staux;
-			}else break;
-		}
-		printf("Nuevo HighScore! Ingrese su nombre: ");
-		highScore[i].name = getname();
-	}
+	highScore = sortHighScore( player1, highScore );
 	//ends sorting
 	printTable( highScore );
 	fwb = fopen( "./Saves/scores.t", "wb" );
@@ -79,6 +69,8 @@ int main( int argc, char** argv ){
 	SDL_Quit();
 	return 0;
 }
+
+//Score functions that WILL be used on guiScore.c
 
 int getScore(){
 	if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1){
@@ -107,6 +99,8 @@ int getScore(){
 	return p1.score;
 }
 
+//To fill Scores
+
 player* fillScores(){
 	int i; char* aux;
 	player* array = malloc( sizeof(player) * 10 );
@@ -118,9 +112,34 @@ player* fillScores(){
 	return array;
 }
 
+//to print them on console
+
 void printTable( player* prntTable ){
 	int i; char* aux;
 	for( i = 0; i  < 10; i++ ){
 		printf("%s -- score: %d\n", prntTable[i].name, prntTable[i].score);
 	}
+}
+
+//to Sort them in order
+player* sortHighScore( player player1, player* highScore ){
+	int i, aux;
+	char* staux;
+	if( player1.score > highScore[9].score){
+		highScore[9].score = player1.score;
+		for( i = 9; i > 0; i-- ){
+			if( highScore[i].score > highScore[ i - 1 ].score  ){
+				aux = highScore[ i - 1 ].score;
+				staux = highScore[ i - 1 ].name;
+				highScore[ i - 1 ].score = highScore[i].score;
+				highScore[ i - 1 ].name =  highScore[i].name;
+				highScore[i].score = aux;
+				highScore[i].name = staux;
+			}else break;
+		}
+		printf("Nuevo HighScore! Ingrese su nombre: ");
+		highScore[i].name = getname();
+	}
+	//returns sorted table
+	return highScore;	
 }

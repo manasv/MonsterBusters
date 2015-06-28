@@ -140,7 +140,7 @@ int buttonAction(){
 	int value = 0;
 	if( x > buttonPossc.x && x < buttonPossc.x + w && y > buttonPossc.y && y < buttonPossc.y + h){
 		buttonRectsc.y = STATE2;
-		if( eventScore.button.button == SDL_BUTTON_LEFT && eventScore.button.state == SDL_RELEASED ){
+		if( eventScore.button.button == SDL_BUTTON_LEFT && eventScore.button.state == SDL_PRESSED ){
 			buttonRectsc.y = STATE3;
 			value = 1;
 		}

@@ -1,5 +1,6 @@
-#include <stdio.h>
-#include "highScore.c"
+//#include <stdio.h> //only used when stand alone
+#include "highScore.h" //only used when stand alone
+//#include <SDL2/SDL_ttf.h> //only used when stand alone
 
 #define SCOREW 300
 #define SCOREH 600
@@ -15,22 +16,34 @@ SDL_Surface* buttonScores = NULL;
 SDL_Surface* bgSurfacesc = NULL;
 SDL_Surface* imgSurfacesc = NULL;
 SDL_Surface* winSurfacesc = NULL;
+SDL_Surface* playerSurface[10]; //this is where fonts will render.
+SDL_Surface* scoreSurface[10];
 SDL_Rect buttonRectsc = { 0, 0, 100, 50 };
 SDL_Rect buttonPossc = { 100, 450, 100, 50 };
 SDL_Renderer* score_render = NULL;
 SDL_Texture* buttonScoret = NULL;
 SDL_Texture* bgTexturesc = NULL;
+SDL_Texture* playerTexture[10];
+//for the ten players-name!
+SDL_Texture* scoreTexture[10];
 SDL_Event eventScore;
+TTF_Font* scoreFont = NULL;
+SDL_Color black = { 255, 255, 255 };
+SDL_Rect playerPos = { 30, 100, 100, 100 };
+SDL_Rect playerRect = { 0, 0, 100, 100 };
+SDL_Rect scorePos = { 30, 100, 100, 100 };
+SDL_Rect scoreRect = { 0, 0, 100, 100 };
 
+player* highScore;
 
 void Score_initWindow();
 player* getHighscoreTable();
 int buttonAction();
 void renderScore();
 
-int main( int argc, char** argv ){
+int showScore(){
 	int terminate = 0;
-	player* highScore = malloc( sizeof(player) * 10 ); //la tabla!
+	highScore = malloc( sizeof( player ) * 10 );
 	highScore = getHighscoreTable();
 	printTable( highScore );
 	Score_initWindow();
@@ -39,28 +52,44 @@ int main( int argc, char** argv ){
 		if( SDL_WaitEvent( &eventScore ) ){
 			if( eventScore.type == SDL_QUIT ){
 				terminate = 1;
-				SDL_DestroyWindow( scorew );
-				IMG_Quit();
-				SDL_Quit();
 			}else{
 				terminate = buttonAction();
 			}
 		}
 	}
+	SDL_DestroyWindow( scorew );
 }
 
 void Score_initWindow(){
+	int i;
+	char* str[10];
+	for( i = 0; i < 10; i++ ){
+		str[i] = malloc( 15 );
+	}
 	SDL_Init( SDL_INIT_EVERYTHING );
 	IMG_Init( IMG_INIT_JPG | IMG_INIT_PNG );
+	TTF_Init();
 	scorew = SDL_CreateWindow( 
 		"HighScore",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		SCOREW,
 		SCOREH,
-		0
+		SDL_WINDOW_BORDERLESS
 	);
 	score_render = SDL_CreateRenderer( scorew, -1, SDL_RENDERER_ACCELERATED );
+	scoreFont = TTF_OpenFont( "./Fonts/PragmataPro for Powerline.ttf", 21 );
+	for( i = 0; i < 10; i++ ){
+		playerSurface[i] = TTF_RenderUTF8_Blended( scoreFont, highScore[i].name, black );
+		playerTexture[i] = SDL_CreateTextureFromSurface( score_render, playerSurface[i] );
+		// cargando nombres del highscore!
+	}
+	for( i = 0; i < 10; i++ ){
+		sprintf( str[i], "%d", highScore[i].score );
+		scoreSurface[i] = TTF_RenderUTF8_Blended( scoreFont, str[i], black );
+		scoreTexture[i] = SDL_CreateTextureFromSurface( score_render, scoreSurface[i] );
+	}
+
 	SDL_SetRenderDrawColor( score_render, 0x20, 0x20, 0x20, 0xFF );
 	winSurfacesc = SDL_GetWindowSurface( scorew );
 	imgSurfacesc = IMG_Load( "./Img/background.jpg" );
@@ -126,8 +155,24 @@ int buttonAction(){
 }
 
 void renderScore(){
+	int i;
 	SDL_RenderClear( score_render );
 	SDL_RenderCopy( score_render, bgTexturesc, NULL, NULL );
 	SDL_RenderCopy( score_render, buttonScoret, &buttonRectsc, &buttonPossc  );
+	for( i = 0; i < 10; i++ ){
+		playerRect.w = playerSurface[i]->w;
+		playerRect.h = playerSurface[i]->h;
+		playerPos.w = playerRect.w;
+		playerPos.h = playerRect.h;
+		playerPos.y = i*playerRect.h + 100; //mueve el siguiente texto! + separacion entre palabras
+		scoreRect.w = scoreSurface[i]->w;
+		scoreRect.h = scoreSurface[i]->h;
+		scorePos.w = scoreRect.w;
+		scorePos.h = scoreRect.h;
+		scorePos.y = i*scoreRect.h + 100;
+		scorePos.x = playerPos.x + 200; //separacion entre jugador y su score!
+		SDL_RenderCopy( score_render, scoreTexture[i], &scoreRect, &scorePos );
+		SDL_RenderCopy( score_render, playerTexture[i], &playerRect, &playerPos );
+	}
 	SDL_RenderPresent( score_render );
 }

@@ -1,4 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "Libs/mainLib.h"
+#include <SDL2/SDL_ttf.h>
+#include "Libs/libget.h"
+#include "Libs/guiScore.h"
 
 #define WINDOW_H 300
 #define WINDOW_W 600
@@ -135,6 +141,8 @@ int main( int argc, char** argv ){
 				buttonRect5.y = STATE3;
 				printf( "This will be the Score nigga!\n" );
 				Mix_PlayChannel( -1, beep, 0 );
+				showScore();
+				drawMenu();
 			}
 			drawMenu();
 		}else{
@@ -152,7 +160,7 @@ void initMenu(){
 		SDL_WINDOWPOS_UNDEFINED,
 		WINDOW_W,
 		WINDOW_H,
-		SDL_WINDOW_BORDERLESS 
+		0
 	);
 
 	render = SDL_CreateRenderer( menu_w1, -1, SDL_RENDERER_ACCELERATED );	

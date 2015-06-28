@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "Libs/mainLib.h"
-#include "Libs/libget.h" // getint getstr getfloat
+//#include <stdio.h> //only used when stand alone
+//#include <stdlib.h> //only used when stand alone
+//#include <string.h> //only used when stand alone
+//#include "Libs/mainLib.h" //only used when stand alone
+//#include "Libs/libget.h" // getint getstr getfloat only used when stand alone
 
 SDL_Event keyPress;
 SDL_Window* w1 = NULL;

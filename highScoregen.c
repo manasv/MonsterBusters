@@ -1,8 +1,8 @@
-//#include <stdio.h> //only used when stand alone
-//#include <stdlib.h> //only used when stand alone
-//#include <string.h> //only used when stand alone
-//#include "Libs/mainLib.h" //only used when stand alone
-//#include "Libs/libget.h" // getint getstr getfloat only used when stand alone
+#include <stdio.h> //only used when stand alone
+#include <stdlib.h> //only used when stand alone
+#include <string.h> //only used when stand alone
+#include "Libs/mainLib.h" //only used when stand alone
+#include "Libs/libget.h" // getint getstr getfloat only used when stand alone
 
 SDL_Event keyPress;
 SDL_Window* w1 = NULL;
@@ -25,7 +25,7 @@ player* sortHighScore( player player1, player* highScore );
 //cambiar esto a main si se necesita generar un highscore
 //antes de implementarlo en el juego!
 
-int testmain( int argc, char** argv ){
+int main( int argc, char** argv ){
 	int i = 9, aux;
 	char* staux = malloc( 10 );
 	player player1;
@@ -33,8 +33,8 @@ int testmain( int argc, char** argv ){
 
 	SDL_Init( SDL_INIT_EVERYTHING);
 	w1 = SDL_CreateWindow( "Score", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 500, 500, 0 );
-	frb = fopen("../Saves/scores.t", "rb");
-	fr = fopen("../Saves/players.t", "r");
+	frb = fopen("./Saves/scores.t", "rb");
+	fr = fopen("./Saves/players.t", "r");
 	if( frb == NULL ){
 		highScore = fillScores();	
 	}else{           
@@ -56,8 +56,8 @@ int testmain( int argc, char** argv ){
 	highScore = sortHighScore( player1, highScore );
 	//ends sorting
 	printTable( highScore );
-	fwb = fopen( "../Saves/scores.t", "wb" );
-	fw = fopen( "../Saves/players.t", "w" );
+	fwb = fopen( "./Saves/scores.t", "wb" );
+	fw = fopen( "./Saves/players.t", "w" );
 	for( i = 0; i < 10; i++ ){
 		fprintf(fw,"%s\n",highScore[i].name);
 		fwrite( &highScore[i].score, sizeof(int), 1, fwb);
@@ -76,7 +76,7 @@ int getScore(){
 	if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1){
 		exit(0);
 	}
-	beepy = Mix_LoadWAV( "../Sound/points.wav" );
+	beepy = Mix_LoadWAV( "Sound/points.wav" );
 	player p1 = { "aa", 0 };
 	int quit = 0;
 	while( !quit ){

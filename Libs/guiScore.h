@@ -144,6 +144,7 @@ int buttonAction(){
 			buttonRectsc.y = STATE3;
 			value = 1;
 		}
+		eventScore.button.state = SDL_RELEASED;
 		renderScore();
 		return value;
 	}else{

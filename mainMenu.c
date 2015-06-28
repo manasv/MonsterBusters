@@ -142,7 +142,6 @@ int main( int argc, char** argv ){
 				printf( "This will be the Score nigga!\n" );
 				Mix_PlayChannel( -1, beep, 0 );
 				showScore();
-				drawMenu();
 			}
 			drawMenu();
 		}else{

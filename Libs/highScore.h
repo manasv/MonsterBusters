@@ -33,8 +33,8 @@ int testmain( int argc, char** argv ){
 
 	SDL_Init( SDL_INIT_EVERYTHING);
 	w1 = SDL_CreateWindow( "Score", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 500, 500, 0 );
-	frb = fopen("../Saves/scores.t", "rb");
-	fr = fopen("../Saves/players.t", "r");
+	frb = fopen("./Saves/scores.t", "rb");
+	fr = fopen("./Saves/players.t", "r");
 	if( frb == NULL ){
 		highScore = fillScores();	
 	}else{           
@@ -56,8 +56,8 @@ int testmain( int argc, char** argv ){
 	highScore = sortHighScore( player1, highScore );
 	//ends sorting
 	printTable( highScore );
-	fwb = fopen( "../Saves/scores.t", "wb" );
-	fw = fopen( "../Saves/players.t", "w" );
+	fwb = fopen( "./Saves/scores.t", "wb" );
+	fw = fopen( "./Saves/players.t", "w" );
 	for( i = 0; i < 10; i++ ){
 		fprintf(fw,"%s\n",highScore[i].name);
 		fwrite( &highScore[i].score, sizeof(int), 1, fwb);

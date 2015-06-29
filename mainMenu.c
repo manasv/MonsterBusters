@@ -6,8 +6,8 @@
 #include "Libs/libget.h"
 #include "Libs/guiScore.h"
 
-#define WINDOW_H 300
-#define WINDOW_W 600
+#define WINDOW_H 500
+#define WINDOW_W 700
 #define STATE1 0
 #define STATE2 50
 #define STATE3 100
@@ -25,15 +25,15 @@ SDL_Texture* buttonTexture3 = NULL;
 SDL_Texture* buttonTexture4 = NULL;
 SDL_Texture* buttonTexture5 = NULL;
 SDL_Rect buttonRect = { 0, 0, 100, 50 }; //que pedazo de la imagen!
-SDL_Rect buttonPos = { 150, 200, 100, 50 }; //relativo a ventana (posicion , tamaño)
+SDL_Rect buttonPos = { 220, 310, 100, 50 }; //relativo a ventana (posicion , tamaño)
 SDL_Rect buttonRect2 = { 0, 0, 50, 50 };
-SDL_Rect buttonPos2 = { 160, 135, 50, 50 };
+SDL_Rect buttonPos2 = { 320, 260, 50, 50 };
 SDL_Rect buttonRect3 = { 0, 0, 50, 50 };
-SDL_Rect buttonPos3 = { 255, 135, 50, 50 };
+SDL_Rect buttonPos3 = { 375, 260, 50, 50 };
 SDL_Rect buttonRect4 = { 0, 0, 50, 50 };
-SDL_Rect buttonPos4 = { 350, 135, 50, 50 };
+SDL_Rect buttonPos4 = { 429, 260, 50, 50 };
 SDL_Rect buttonRect5 = { 0, 0, 100, 50 };
-SDL_Rect buttonPos5 = { 350, 200, 100, 50 };
+SDL_Rect buttonPos5 = { 390, 310, 100, 50 };
 
 SDL_Event mEvnt;
 SDL_Event keyPress;
@@ -165,7 +165,7 @@ void initMenu(){
 	render = SDL_CreateRenderer( menu_w1, -1, SDL_RENDERER_ACCELERATED );	
 	SDL_SetRenderDrawColor( render, 0x20, 0x20, 0x20, 0xFF );
 	wSurface = SDL_GetWindowSurface( menu_w1 );
-	bgSurface = IMG_Load( "./Img/background.jpg" );
+	bgSurface = IMG_Load( "./Img/OP.jpg" );
 	SDL_BlitSurface( bgSurface, NULL, wSurface, NULL );
  	SDL_UpdateWindowSurface( menu_w1 );
 	bgTexture = SDL_CreateTextureFromSurface( render, bgSurface );

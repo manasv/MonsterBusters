@@ -92,7 +92,7 @@ void Score_initWindow(){
 
 	SDL_SetRenderDrawColor( score_render, 0x20, 0x20, 0x20, 0xFF );
 	winSurfacesc = SDL_GetWindowSurface( scorew );
-	imgSurfacesc = IMG_Load( "./Img/background.jpg" );
+	imgSurfacesc = IMG_Load( "./Img/HighScoreScree.jpg" );
 	SDL_BlitSurface( imgSurfacesc, NULL, winSurfacesc, NULL );
 	SDL_UpdateWindowSurface( scorew );
 	bgTexturesc = SDL_CreateTextureFromSurface( score_render, imgSurfacesc );

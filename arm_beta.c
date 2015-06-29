@@ -5,50 +5,145 @@
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_video.h"
 
-#define WINDOW_SIZE 800
+#define WINDOW_SIZE 600
 #define WINDOW_CENTER_W (WINDOW_SIZE/2) //tomar en cuenta las dimensiones de la imagen!
 #define WINDOW_CENTER_H (WINDOW_SIZE/2) //por lo tanto separar altura de ancho
 
 #define CART_X(x) x + WINDOW_CENTER_W
 #define CART_Y(y) WINDOW_SIZE - (WINDOW_CENTER_H + y)
 
+#define PI 3.141592
+#define RAD_TO_DEG (180.0/PI)
+
+#define THETA 0.174532925
+
+float rot_pos[2][2] = {
+	{cos(THETA), -sin(THETA)},
+	{sin(THETA),  cos(THETA)}
+};
+
+float rot_neg[2][2] = {
+	{cos(-THETA), -sin(-THETA)},
+	{sin(-THETA),  cos(-THETA)}
+};
+
 //no entiendo por que -65 y -20 pero eso lo pone en el centro aparente
 //quizas por que el eje esta en el centro de la imagen y no en el circulo
 //de la punta! puede ser!
 
 typedef struct {
-	float cx;
-	float cy;
+	double x;
+	double y;
 } vector;
+
+typedef struct {
+	SDL_Texture *texture;
+	int h;
+	int w;
+} GAME_Texture;
+
+typedef struct {
+	GAME_Texture t;
+	vector pos;
+} Arm_Segment;
+
+typedef struct {
+	Arm_Segment segments[3];
+} GAME_Arm;
+
+void v_add(vector *a, vector *b, vector *c) {
+	c->x = a->x + b->x;
+	c->y = a->y + b->y;
+}
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
-SDL_Surface *screen_surface = NULL;
-SDL_Surface *background = NULL;
-SDL_Surface *axis = NULL;
 
-SDL_Texture *background_tex = NULL;
-SDL_Texture *arm_tex = NULL;
-SDL_Texture *axis_tex = NULL;
-SDL_Surface *arm_sur;
+GAME_Texture bg_t;
+GAME_Texture axis_t;
 
+GAME_Arm arm;
 
-void draw(double angle) {
-	SDL_Rect arm_rect  = {CART_X(axis->w/2), CART_Y(arm_sur->h/2), arm_sur->w, arm_sur->h};
-	SDL_Point center   = {-axis->w/2, arm_sur->h/2}; //Cambio a respectiva definicion
-	SDL_Rect axis_rect = {CART_X(-(axis->w/2)), CART_Y(axis->h/2), axis->w, axis->h};
+void load_texture_from_image(char *filename, GAME_Texture *tex) {
+	SDL_Surface *s;
+	s = IMG_Load(filename);
+	tex->texture = SDL_CreateTextureFromSurface(renderer, s);
+	tex->w = s->w;
+	tex->h = s->h;
+	printf("Loaded '%s', (%d, %d)\n", filename, s->w, s->h);
+	SDL_FreeSurface(s);
+}
+
+void load_images() {
+	load_texture_from_image("Img/background.jpg", &bg_t);
+	
+	// Load arm
+	int i;
+	char filename[255];
+	for(i = 0; i < 3; i++) {
+		sprintf(filename, "Img/arm-%d.png", i + 1);
+		load_texture_from_image(filename, &(arm.segments[i].t));
+		arm.segments[i].pos.x = 1000.0;
+		arm.segments[i].pos.y = 0.0;
+	}
+
+	load_texture_from_image("./Img/axis.png", &axis_t);
+}
+
+void draw_game() {
+	// SDL_Rect arm_rect  = {CART_X(axis->w/2), CART_Y(arm_sur->h/2), arm_sur->w, arm_sur->h};
+	// SDL_Point center   = {-axis->w/2, arm_sur->h/2}; //Cambio a respectiva definicion
+	
+	SDL_Rect axis_rect = {CART_X(-(axis_t.w/2)), CART_Y(axis_t.h/2), axis_t.w, axis_t.h};
 	//Cambio a respectiva definicion
  	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, background_tex, NULL, NULL);
-    SDL_RenderCopyEx(renderer, arm_tex, NULL, &arm_rect, (float)angle, &center, SDL_FLIP_NONE);
-    SDL_RenderCopy(renderer, axis_tex, NULL, &axis_rect);
-	/*Tenia NULL donde ahora tiene &d 
-	 *Por eso lo renderizaba en la esquina, por que &r tiene posicion 0,0 ver linea 23<<
-	 *No se para que es &r, no se usa, pero lo dejare ahi por si acaso!
-	*/
-	
+    SDL_RenderCopy(renderer, bg_t.texture, NULL, NULL);
+
+    SDL_Rect arm_rect;
+    int rect_offset_x = axis_t.w/2, rect_offset_y = 0;
+	SDL_Point arm_center = {-axis_t.w/2, 0.0};
+	float angle_rad, angle_deg;
+	double h;
+	int i;
+	for(i = 0; i < 3; i++) {
+    	Arm_Segment *seg = &(arm.segments[i]);
+    	arm_rect.x = CART_X(rect_offset_x);
+    	arm_rect.y = CART_Y(rect_offset_y + seg->t.h/2);
+    	arm_rect.w = seg->t.w;
+    	arm_rect.h = seg->t.h;
+    	
+    	arm_center.y = seg->t.h/2;
+    	angle_rad = atan(seg->pos.y/seg->pos.x);
+		angle_deg = angle_rad * RAD_TO_DEG;
+		
+    	if( seg->pos.x < 0 ) {
+			angle_deg = angle_deg + 180;
+			angle_rad = - angle_rad;
+    	}
+    	SDL_RenderCopyEx(renderer, seg->t.texture, NULL, &arm_rect, -angle_deg, &arm_center, SDL_FLIP_NONE);
+    	arm_center.x = - seg->t.h/2;
+    	
+    	rect_offset_x += seg->t.w * cos(angle_rad);
+    	rect_offset_y += seg->t.w * sin(angle_rad);
+    }
+    SDL_RenderCopy(renderer, axis_t.texture, NULL, &axis_rect);
 	SDL_RenderPresent(renderer);
+}
+
+/*
+x' = x \cos \theta - y \sin \theta\,,
+y' = x \sin \theta + y \cos \theta\,.
+*/
+void rotate_arm(int start_seg, float theta) {
+	int i;
+	for(i = start_seg; i < 3; i++) {
+		Arm_Segment *seg = &(arm.segments[i]);
+		int x = seg->pos.x, y = seg->pos.y;
+		seg->pos.x = x * cos(theta) - y * sin(theta);
+		seg->pos.y = x * sin(theta) + y * cos(theta);
+		// printf("Seg[%d] = (%.2f, %.2f)\n", i, seg->pos.x, seg->pos.y);
+	}
 }
 
 int main( int argc, char** argv ) { //cambie esto de main(void) a lo que esta ahorita
@@ -58,15 +153,8 @@ int main( int argc, char** argv ) { //cambie esto de main(void) a lo que esta ah
 	SDL_Init(SDL_INIT_VIDEO);
 	IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 	SDL_CreateWindowAndRenderer(WINDOW_SIZE, WINDOW_SIZE, 0, &window, &renderer);
-	screen_surface = SDL_GetWindowSurface(window);
-	background = IMG_Load("./Img/background.jpg"); //la imagen se movio al directorio ./Img
-	arm_sur    = IMG_Load("./Img/A.png"); //la imagen se movio al directorio ./Img
-	axis       = IMG_Load("./Img/AXIS.png");
-	printf("Axis: %d, %d\n", axis->w, axis->h);
-	arm_tex = SDL_CreateTextureFromSurface(renderer, arm_sur);
-	background_tex = SDL_CreateTextureFromSurface(renderer, background);
-	axis_tex = SDL_CreateTextureFromSurface(renderer, axis);
-	draw(angle);
+	load_images();
+	draw_game();
 
 	while(!finish) {
 		if(SDL_WaitEvent(&evt)) {
@@ -74,29 +162,25 @@ int main( int argc, char** argv ) { //cambie esto de main(void) a lo que esta ah
 				case SDL_QUIT:
 					finish = 1;
 					break;
-				case SDL_MOUSEBUTTONDOWN:
-					if(evt.button.button == SDL_BUTTON_LEFT) {
-						angle = (atan((double)(evt.button.y-300)/(double)(evt.button.x-300)) * 180.0)/3.141592;
-						if(evt.button.x-300 < 0) {
-							angle = angle + 180.0;
-						}
-						draw(angle);
-						printf("(%d, %d) = %.2f\n", evt.button.x, evt.button.y, angle);		
-					}
-					break;
 				case SDL_KEYDOWN:
 					if(evt.key.keysym.sym == SDLK_RIGHT) {
-						angle += 5.0;
+						rotate_arm(0, -THETA);
+					} else if(evt.key.keysym.sym == SDLK_LEFT) {
+						rotate_arm(0, THETA);
+					} else if(evt.key.keysym.sym == SDLK_UP) {
+						rotate_arm(1, THETA);
+					} else if(evt.key.keysym.sym == SDLK_DOWN) {
+						rotate_arm(1, -THETA);
+					}  else if(evt.key.keysym.sym == SDLK_w) {
+						rotate_arm(2, THETA);
+					} else if(evt.key.keysym.sym == SDLK_s) {
+						rotate_arm(2, -THETA);
 					}
-					if(evt.key.keysym.sym == SDLK_LEFT) {
-						angle -= 5.0;
-					}
-					draw(angle);
+					draw_game();
 					break;
 			}
 		}
 	}
-	SDL_FreeSurface(background);
 	SDL_Quit();
 	return 0;
 }

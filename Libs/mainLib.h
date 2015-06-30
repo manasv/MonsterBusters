@@ -23,6 +23,7 @@ typedef struct{
     int typeCode;
     SDL_Texture *busterTexture;
     SDL_Rect Pos;
+    SDL_Rect Rect;
 }Buster;
  
 bool sdlStartup();
@@ -37,6 +38,8 @@ int assignPosition(int rowNumber, int columnNumber);
 void drawBuster();
 void moveBuster();
 void reDraw();
+int randomizeBuster();
+void verifyCollide(Buster buster, Egg **matrix);
  
 Egg **matrix = NULL;
 SDL_Window *window = NULL;
@@ -45,8 +48,8 @@ SDL_Texture *texture = NULL, *background = NULL, *eggDestroyer = NULL;
 SDL_Renderer *renderer = NULL;
 Mix_Music *bgMusic = NULL;
 Buster buster;
-bool pause = false;
- 
+bool move = true;
+
 bool sdlStartup(){
  
     bool success = true;
@@ -57,7 +60,7 @@ bool sdlStartup(){
         success = false;
     }
     else{
-        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear" ) ){
+        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "best" ) ){
             printf( "Warning: Linear texture filtering not enabled!" );
         }
  
@@ -95,7 +98,6 @@ bool sdlStartup(){
  
 bool sdlMediaStartup(){
     bool success;
- 
     background = IMG_LoadTexture(renderer,"Img/background.jpg");
     SDL_RenderCopy(renderer, background, NULL, NULL);
  
@@ -151,7 +153,7 @@ Egg* fillMatrix(Egg **matrix){
     int i,j;
     for(i=0 ; i < ROWS; i++){
         for(j=0; j<COLUMNS; j++){
-            (matrix[i][j]).colorCode = (rand()%4)+1;
+            (matrix[i][j]).colorCode = (rand()%5);
         }
     }
     return *matrix;
@@ -194,7 +196,6 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix){
  
             switch(matrix[i][j].colorCode){
                 case nil:
-                /*texture = IMG_LoadTexture(renderer, "Img/trans.png");*/
                 break;
                 case cthulhu:
                 texture = IMG_LoadTexture(renderer, "Img/C.png");
@@ -245,7 +246,7 @@ int assignPosition(int rowNumber, int columnNumber){
 }
  
 void drawBuster(){
-    buster.typeCode = (rand()%4)+6;
+    buster.typeCode = randomizeBuster();
  
     switch(buster.typeCode){
                 case mint:
@@ -265,7 +266,7 @@ void drawBuster(){
                 break;
     } 
  
-    buster.velocity = 4;
+    buster.velocity = 16;
  
     buster.Pos.x= SCREEN_WIDTH/2;
     buster.Pos.y= SCREEN_HEIGHT/2;
@@ -274,71 +275,107 @@ void drawBuster(){
  
     buster.posX = buster.Pos.x;
     buster.posY = buster.Pos.y;
+    buster.Rect.x = 0;
+    buster.Rect.y = 0;
+    buster.Rect.w = EGG_TILE_SIZE;
+    buster.Rect.h = EGG_TILE_SIZE;
  
     SDL_RenderCopy(renderer, buster.busterTexture, NULL, &(buster.Pos));
 }
  
 void moveBuster(){
-    if(pause == false){
 
-    	const Uint8 *press = SDL_GetKeyboardState(NULL);
+	const Uint8 *press = SDL_GetKeyboardState(NULL);
 
-    	if(press[SDL_SCANCODE_UP]){
-    		if(press[SDL_SCANCODE_LEFT]){
-    			buster.Pos.y -= buster.velocity; 
-               	buster.Pos.x -= buster.velocity;
-    		}
+	if(press[SDL_SCANCODE_UP]){
+		if(press[SDL_SCANCODE_LEFT]){
+			buster.Pos.y -= buster.velocity/2; 
+			buster.Pos.x -= buster.velocity/2;
+		}
 
-    		if(press[SDL_SCANCODE_RIGHT]){
-    			buster.Pos.y -= buster.velocity; 
-               	buster.Pos.x += buster.velocity;
-    		}
-    		buster.Pos.y -= buster.velocity; 
-    	}
+		if(press[SDL_SCANCODE_RIGHT]){
+			buster.Pos.y -= buster.velocity/2; 
+			buster.Pos.x += buster.velocity/2;
+		}
+		buster.Pos.y -= buster.velocity; 
+        move = true;
+	}
 
-    	if(press[SDL_SCANCODE_DOWN]){
-    		if(press[SDL_SCANCODE_LEFT]){
-    			buster.Pos.y += buster.velocity; 
-               	buster.Pos.x -= buster.velocity;
-    		}
+	if(press[SDL_SCANCODE_DOWN]){
+		if(press[SDL_SCANCODE_LEFT]){
+			buster.Pos.y += buster.velocity/2; 
+			buster.Pos.x -= buster.velocity/2;
+		}
 
-    		if(press[SDL_SCANCODE_RIGHT]){
-    			buster.Pos.y += buster.velocity; 
-               	buster.Pos.x += buster.velocity;
-    		}
-    		buster.Pos.y += buster.velocity; 
-    	}
+		if(press[SDL_SCANCODE_RIGHT]){
+			buster.Pos.y += buster.velocity/2; 
+			buster.Pos.x += buster.velocity/2;
+		}
+		buster.Pos.y += buster.velocity;
+        move = true; 
+	}
 
-    	if(press[SDL_SCANCODE_LEFT]){
-    		buster.Pos.x -= buster.velocity; 
-    	}
+	if(press[SDL_SCANCODE_LEFT]){
+		buster.Pos.x -= buster.velocity;
+        move = true; 
+	}
 
-    	if(press[SDL_SCANCODE_RIGHT]){
-    		buster.Pos.x += buster.velocity; 
-    	}
+	if(press[SDL_SCANCODE_RIGHT]){
+		buster.Pos.x += buster.velocity;
+        move = true;
+	}
 
-        pause = true;
- 
-        if( ( buster.Pos.x < 0 ) || ( buster.Pos.x + EGG_TILE_SIZE > SCREEN_WIDTH ) ){
-            buster.Pos.x -= buster.velocity;
-        }
- 
-        if( ( buster.Pos.y < 0 ) || ( buster.Pos.y + EGG_TILE_SIZE > SCREEN_HEIGHT ) ){
-            buster.Pos.y -= buster.velocity;
-        }
- 
-    }
-     
- 
-    if(pause == true){
-        reDraw();   
+	if(buster.Pos.x < 0 ){
+		buster.Pos.x += buster.velocity;
+	}
+	else if(buster.Pos.x + EGG_TILE_SIZE > SCREEN_WIDTH){
+		buster.Pos.x -= buster.velocity;
+	}
+
+	if(buster.Pos.y < 0){
+		buster.Pos.y += buster.velocity;
+	}
+	else if(buster.Pos.y + EGG_TILE_SIZE > SCREEN_HEIGHT){
+		buster.Pos.y -= buster.velocity;
+	}
+    //verifyCollide(buster,matrix);
+    if(move == true){
+        reDraw();
+        move = false;
     }
 }
+ 
  
 void reDraw(){
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, background, NULL, NULL);
-    SDL_RenderCopy(renderer, buster.busterTexture, NULL, &(buster.Pos));
     drawEggs(renderer,matrix);
-    pause = false;
+    SDL_RenderCopy(renderer, buster.busterTexture, NULL, &(buster.Pos));
+    SDL_RenderPresent(renderer);
+}
+
+int randomizeBuster(){
+    int luck = 5, generated;
+
+    generated = (rand()%4)+6;
+
+    while(generated == magic && luck > 0){
+        generated = (rand()%4)+6;
+        luck--;
+    }
+
+    return generated;
+}
+
+void verifyCollide(Buster buster, Egg **matrix){
+    int i,j;
+
+    for(i = 0; i < ROWS; i++){
+        for(j = 0; j < COLUMNS; j++){
+            if( (buster.Pos.x + EGG_TILE_SIZE) > (matrix[i][j]).x){
+                buster.Pos.x += buster.velocity;
+            }     
+        }
+    }
+
 }

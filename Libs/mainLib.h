@@ -388,7 +388,7 @@ int randomizeBuster(){
 
 bool verifyCollide(Buster *buster, Egg **matrix){
     int i,j;
-    //system("clear");
+    system("clear");
     printf("BX: %d\n",(buster->Pos.x + 0) );
     printf("BY: %d\n",(buster->Pos.y + 0) );
     printf("%d\n",buster->typeCode);
@@ -398,7 +398,6 @@ bool verifyCollide(Buster *buster, Egg **matrix){
             if((matrix[i][j]).colorCode != 0){
                 if( SDL_HasIntersection( &(buster->Pos), &((matrix[i][j]).Pos))){
                     printf("Collide\n");
-                    //(matrix[i][j]).colorCode = nil;
                     destroyEggs(i,j,buster->typeCode,buster->typeCode-4);
                     return true;
                 }
@@ -410,54 +409,82 @@ bool verifyCollide(Buster *buster, Egg **matrix){
 }
 
 void destroyEggs(int i, int j,int bustertype, int eggtype){
+	
+	bool singleCollide = true;
+	
+	if(buster->typeCode == bustertype){
+		if((matrix[i][j]).colorCode == eggtype){
 
-    if(buster->typeCode == bustertype){
-        if((matrix[i][j]).colorCode == eggtype){
+				if(j != 0){
+					if(((matrix[i][j]).colorCode == (matrix[i][j-1]).colorCode)){
+						(matrix[i][j]).colorCode = nil;
+						(matrix[i][j-1]).colorCode = nil;
+						singleCollide = false;
+					}
+				}
 
-            if((matrix[i][j]).colorCode == (matrix[i][j-1]).colorCode){
-                (matrix[i][j]).colorCode = nil;
-                (matrix[i][j-1]).colorCode = nil;
-            }
+				if(j != 19){
+					if((matrix[i][j]).colorCode == (matrix[i][j+1]).colorCode){
+						(matrix[i][j]).colorCode = nil;
+						(matrix[i][j+1]).colorCode = nil;
+						singleCollide = false;
+					}
+				}
 
-            if((matrix[i][j]).colorCode == (matrix[i][j+1]).colorCode){
-                (matrix[i][j]).colorCode = nil;
-                (matrix[i][j+1]).colorCode = nil;
-            }
+				if(i != 0){
+					if((matrix[i][j]).colorCode == (matrix[i-1][j]).colorCode){
+						(matrix[i][j]).colorCode = nil;
+						(matrix[i-1][j]).colorCode = nil;
+						singleCollide = false;
+					}
+				}
 
-            if((matrix[i][j]).colorCode == (matrix[i-1][j]).colorCode){
-                (matrix[i][j]).colorCode = nil;
-                (matrix[i-1][j]).colorCode = nil;
-            }
+				if(i != 20){
+					if((matrix[i][j]).colorCode == (matrix[i+1][j]).colorCode){
+						(matrix[i][j]).colorCode = nil;
+						(matrix[i+1][j]).colorCode = nil;
+						singleCollide = false;
+					}
+				}
 
-            if((matrix[i][j]).colorCode == (matrix[i+1][j]).colorCode){
-                (matrix[i][j]).colorCode = nil;
-                (matrix[i+1][j]).colorCode = nil;
-            }
+				if(i != 0 && j != 0){
+					if((matrix[i][j]).colorCode == (matrix[i-1][j-1]).colorCode){
+						(matrix[i][j]).colorCode = nil;
+						(matrix[i-1][j-1]).colorCode = nil;
+						singleCollide = false;
+					}
+				}
 
-            if((matrix[i][j]).colorCode == (matrix[i-1][j-1]).colorCode){
-                (matrix[i][j]).colorCode = nil;
-                (matrix[i-1][j-1]).colorCode = nil;
-            }
+				if(i != 20 && j != 0){
+					if((matrix[i][j]).colorCode == (matrix[i+1][j-1]).colorCode){
+						(matrix[i][j]).colorCode = nil;
+						(matrix[i+1][j-1]).colorCode = nil;
+						singleCollide = false;
+					}
+				}
 
-            if((matrix[i][j]).colorCode == (matrix[i+1][j-1]).colorCode){
-                (matrix[i][j]).colorCode = nil;
-                (matrix[i+1][j-1]).colorCode = nil;
-            }
+				if(i != 20 && j != 19){
+					if((matrix[i][j]).colorCode == (matrix[i+1][j+1]).colorCode){
+						(matrix[i][j]).colorCode = nil;
+						(matrix[i+1][j+1]).colorCode = nil;
+						singleCollide = false;
+					}
+				}
 
-            if((matrix[i][j]).colorCode == (matrix[i+1][j+1]).colorCode){
-                (matrix[i][j]).colorCode = nil;
-                (matrix[i+1][j+1]).colorCode = nil;
-            }
+				if(i != 0 && j != 19){
+					if((matrix[i][j]).colorCode == (matrix[i-1][j+1]).colorCode){
+						(matrix[i][j]).colorCode = nil;
+						(matrix[i-1][j+1]).colorCode = nil;
+						singleCollide = false;
+					}
+				}
 
-            if((matrix[i][j]).colorCode == (matrix[i-1][j+1]).colorCode){
-                (matrix[i][j]).colorCode = nil;
-                (matrix[i-1][j+1]).colorCode = nil;
-            }
+			if(singleCollide == false){
+				free(buster);
+				buster = NULL;
+				drawBuster();
+			}
 
-            free(buster);
-            buster = NULL;
-            drawBuster();
-
-        }
-    }
+		}
+	}
 }

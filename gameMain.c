@@ -1,4 +1,4 @@
-#include "Libs/mainLib.h"
+//#include "Libs/mainLib.h"
 
 int game(int dificulty);
 

@@ -5,6 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include "Libs/libget.h"
 #include "Libs/guiScore.h"
+#include "gameMain.c"
 
 #define WINDOW_H 500
 #define WINDOW_W 700
@@ -48,7 +49,7 @@ void initMenu();
 
 int main( int argc, char** argv ){
 	int quit = 0;
-	int dificulty = 0, flag[3] = { 0, 0, 0 };
+	int value = 0, flag[3] = { 0, 0, 0 };
 	int x, y, w, h, w2, h2, w3, h3, w4, h4, w5, h5;
 	w = buttonPos.w; //for later ease of use
 	h = buttonPos.h;
@@ -88,8 +89,27 @@ int main( int argc, char** argv ){
 			buttonRect.y = STATE2;
 			if( mEvnt.button.button == SDL_BUTTON_LEFT && mEvnt.button.state == SDL_PRESSED ){
 				buttonRect.y = STATE3;
-				printf(" HUY\n");
+				printf(" START\n");
 				Mix_PlayChannel( -1, beep, 0 );
+				if( flag[0] == 1 ){
+					value = 1;
+					printf("difficulty -- %d\n", value);
+					SDL_DestroyWindow( menu_w1 );
+					game( value );
+					break;
+				}else if( flag[1] == 1 ){
+					value = 2;
+					SDL_DestroyWindow( menu_w1 );
+					game( value );
+					break;
+				}else if( flag[2] == 1 ){
+					value = 3;
+					SDL_DestroyWindow( menu_w1 );
+					game( value );
+					break;
+				}else{
+					printf("No difficulty was selected!\n");
+				}
 			}
 			drawMenu();
 		}else{
@@ -100,7 +120,7 @@ int main( int argc, char** argv ){
 			buttonRect2.y = STATE2;
 			if( mEvnt.button.button == SDL_BUTTON_LEFT && mEvnt.button.state == SDL_PRESSED ){
 				buttonRect2.y = STATE3;
-				printf("SHIET\n");
+				printf("EASY\n");
 				Mix_PlayChannel( -1, beep, 0 );
 				flag[0] =  1; flag[1] = 0; flag[2] = 0;
 			}
@@ -113,7 +133,7 @@ int main( int argc, char** argv ){
 			buttonRect3.y = STATE2;
 			if(  mEvnt.button.button == SDL_BUTTON_LEFT && mEvnt.button.state == SDL_PRESSED ){
 					buttonRect3.y = STATE3;
-					printf( "DAYUM\n" );
+					printf( "MEDIUM\n" );
 					Mix_PlayChannel( -1, beep, 0 );
 					flag[0] = 0; flag[1] = 1; flag[2] = 0;
 			}
@@ -126,7 +146,7 @@ int main( int argc, char** argv ){
 			buttonRect4.y = STATE2;
 			if(  mEvnt.button.button == SDL_BUTTON_LEFT && mEvnt.button.state == SDL_PRESSED ){
 				buttonRect4.y = STATE3;
-				printf( "FRIED CHICKEN NIGGA\n" );
+				printf( "HARD\n" );
 				Mix_PlayChannel( -1, beep, 0 );
 				flag[0] = 0; flag[1] = 0; flag[2] =1;
 			}
@@ -139,7 +159,7 @@ int main( int argc, char** argv ){
 			buttonRect5.y = STATE2;
 			if( mEvnt.button.button == SDL_BUTTON_LEFT && mEvnt.button.state == SDL_PRESSED ){
 				buttonRect5.y = STATE3;
-				printf( "This will be the Score nigga!\n" );
+				printf( "SCORES\n" );
 				Mix_PlayChannel( -1, beep, 0 );
 				showScore();
 			}

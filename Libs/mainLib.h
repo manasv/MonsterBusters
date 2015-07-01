@@ -296,13 +296,13 @@ void moveBuster(){
 
 	if(press[SDL_SCANCODE_UP]){
 		if(press[SDL_SCANCODE_LEFT]){
-			buster->Pos.y -= buster->velocity/2; 
-			buster->Pos.x -= buster->velocity/2;
+			buster->Pos.y -= buster->velocity; 
+			buster->Pos.x -= buster->velocity;
 		}
 
 		if(press[SDL_SCANCODE_RIGHT]){
-			buster->Pos.y -= buster->velocity/2; 
-			buster->Pos.x += buster->velocity/2;
+			buster->Pos.y -= buster->velocity; 
+			buster->Pos.x += buster->velocity;
 		}
 		buster->Pos.y -= buster->velocity; 
         move = true;
@@ -310,13 +310,13 @@ void moveBuster(){
 
 	if(press[SDL_SCANCODE_DOWN]){
 		if(press[SDL_SCANCODE_LEFT]){
-			buster->Pos.y += buster->velocity/2; 
-			buster->Pos.x -= buster->velocity/2;
+			buster->Pos.y += buster->velocity; 
+			buster->Pos.x -= buster->velocity;
 		}
 
 		if(press[SDL_SCANCODE_RIGHT]){
-			buster->Pos.y += buster->velocity/2; 
-			buster->Pos.x += buster->velocity/2;
+			buster->Pos.y += buster->velocity; 
+			buster->Pos.x += buster->velocity;
 		}
 		buster->Pos.y += buster->velocity;
         move = true; 
@@ -388,7 +388,7 @@ int randomizeBuster(){
 
 bool verifyCollide(Buster *buster, Egg **matrix){
     int i,j;
-    system("clear");
+    //system("clear");
     printf("BX: %d\n",(buster->Pos.x + 0) );
     printf("BY: %d\n",(buster->Pos.y + 0) );
     printf("%d\n",buster->typeCode);
@@ -401,7 +401,7 @@ bool verifyCollide(Buster *buster, Egg **matrix){
                     //(matrix[i][j]).colorCode = nil;
                     destroyEggs(i,j,buster->typeCode,buster->typeCode-4);
                     return true;
-                }   
+                }
             }
 
         }
@@ -417,66 +417,46 @@ void destroyEggs(int i, int j,int bustertype, int eggtype){
             if((matrix[i][j]).colorCode == (matrix[i][j-1]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i][j-1]).colorCode = nil;
-                free(buster);
-                buster = NULL;
-                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i][j+1]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i][j+1]).colorCode = nil;
-                free(buster);
-                buster = NULL;
-                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i-1][j]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i-1][j]).colorCode = nil;
-                free(buster);
-                buster = NULL;
-                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i+1][j]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i+1][j]).colorCode = nil;
-                free(buster);
-                buster = NULL;
-                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i-1][j-1]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i-1][j-1]).colorCode = nil;
-                free(buster);
-                buster = NULL;
-                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i+1][j-1]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i+1][j-1]).colorCode = nil;
-                free(buster);
-                buster = NULL;
-                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i+1][j+1]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i+1][j+1]).colorCode = nil;
-                free(buster);
-                buster = NULL;
-                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i-1][j+1]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i-1][j+1]).colorCode = nil;
-                free(buster);
-                buster = NULL;
-                drawBuster();
             }
+
+            free(buster);
+            buster = NULL;
+            drawBuster();
 
         }
     }

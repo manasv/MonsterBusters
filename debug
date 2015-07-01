@@ -1,0 +1,4 @@
+#!/bin/sh
+#$ -N $1 # numero de argumentos
+
+gcc -g -o rundb $1 -lSDL2 -lm -lSDL2_mixer -lSDL2_image -lSDL2_ttf

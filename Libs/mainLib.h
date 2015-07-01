@@ -9,25 +9,22 @@
  
 typedef enum bool{false,true}bool;
 enum tileCode{nil,cthulhu,ghoulbeast,kumonga,seaserpent,mint,fire,water,ice,magic};
+enum dificulty{none,easy,normal,hard};
  
 typedef struct{
-    int x;
-    int y;
+    SDL_Rect Pos;
     int colorCode;
 }Egg;
  
 typedef struct{
     int velocity;
-    int posX;
-    int posY;
     int typeCode;
     SDL_Texture *busterTexture;
     SDL_Rect Pos;
-    SDL_Rect Rect;
 }Buster;
  
 bool sdlStartup();
-bool sdlMediaStartup();
+bool sdlMediaStartup(int dificulty);
 void closeALL();
 void allocateMatrix(Egg ***matrix);
 Egg* fillMatrix(Egg **matrix);
@@ -39,7 +36,8 @@ void drawBuster();
 void moveBuster();
 void reDraw();
 int randomizeBuster();
-void verifyCollide(Buster buster, Egg **matrix);
+bool verifyCollide(Buster buster, Egg **matrix);
+void destroyEggs(int i, int j);
  
 Egg **matrix = NULL;
 SDL_Window *window = NULL;
@@ -49,6 +47,7 @@ SDL_Renderer *renderer = NULL;
 Mix_Music *bgMusic = NULL;
 Buster buster;
 bool move = true;
+int radius;
 
 bool sdlStartup(){
  
@@ -96,9 +95,25 @@ bool sdlStartup(){
     return success;
 }
  
-bool sdlMediaStartup(){
+bool sdlMediaStartup(int dificulty){
     bool success;
-    background = IMG_LoadTexture(renderer,"Img/background.jpg");
+
+    switch(dificulty){
+        case easy:
+            background = IMG_LoadTexture(renderer,"Img/BG_EASY.jpg");
+            radius = 250;
+            break;
+        case normal:
+            background = IMG_LoadTexture(renderer,"Img/BG_NORMAL.jpg");
+            radius = 200;
+            break;
+        case hard:
+            background = IMG_LoadTexture(renderer,"Img/BG_HARD.jpg");
+            radius = 150;
+            break;
+
+    }
+
     SDL_RenderCopy(renderer, background, NULL, NULL);
  
     bgMusic = Mix_LoadMUS("Sound/music.mp3");
@@ -187,7 +202,7 @@ void freeEggs(Egg **matrix, int rows){
  
 void drawEggs(SDL_Renderer *renderer,Egg **matrix){
     int i,j;
-    float circleEQ, radius = 200;
+    float circleEQ;
  
     SDL_Rect newPosition;
  
@@ -210,18 +225,17 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix){
                 texture = IMG_LoadTexture(renderer, "Img/S.png");
                 break;
             } 
-            newPosition.x = assignPosition(i,j);
-            newPosition.y = EGG_TILE_SIZE*i;
-            newPosition.w = EGG_TILE_SIZE;
-            newPosition.h = EGG_TILE_SIZE;
-            (matrix[i][j]).x = newPosition.x;
-            (matrix[i][j]).y = newPosition.y;
+            (matrix[i][j]).Pos.x = assignPosition(i,j);
+            (matrix[i][j]).Pos.y = EGG_TILE_SIZE*i;
+            (matrix[i][j]).Pos.w = EGG_TILE_SIZE;
+            (matrix[i][j]).Pos.h = EGG_TILE_SIZE;
+            
  
-            circleEQ = pow(((matrix[i][j]).x)-(SCREEN_WIDTH/2),2) + 
-            pow(((matrix[i][j]).y)-(SCREEN_HEIGHT/2),2);
+            circleEQ = pow(((matrix[i][j]).Pos.x)-(SCREEN_WIDTH/2),2) + 
+            pow((((matrix[i][j]).Pos.y)-(SCREEN_HEIGHT/2)),2);
  
             if(circleEQ > pow(radius,2)){
-                SDL_RenderCopy(renderer, texture, NULL, &newPosition);
+                SDL_RenderCopy(renderer, texture, NULL, &(matrix[i][j]).Pos);
             }
             else{
                 (matrix[i][j]).colorCode = nil;
@@ -239,7 +253,7 @@ int assignPosition(int rowNumber, int columnNumber){
         result = ((EGG_TILE_SIZE/2)+(SCREEN_WIDTH*0.015))*((rowNumber+1)%2)+(columnNumber*EGG_TILE_SIZE);
     }
     else{
-        result = (SCREEN_WIDTH*0.01)+((EGG_TILE_SIZE/2))*((rowNumber+1)%2)+(columnNumber*EGG_TILE_SIZE);
+        result = (SCREEN_HEIGHT*0.001)+((EGG_TILE_SIZE/2))*((rowNumber+1)%2)+(columnNumber*EGG_TILE_SIZE);
     }
  
     return result;
@@ -268,17 +282,10 @@ void drawBuster(){
  
     buster.velocity = 16;
  
-    buster.Pos.x= SCREEN_WIDTH/2;
-    buster.Pos.y= SCREEN_HEIGHT/2;
-    buster.Pos.w= EGG_TILE_SIZE;
-    buster.Pos.h= EGG_TILE_SIZE;
- 
-    buster.posX = buster.Pos.x;
-    buster.posY = buster.Pos.y;
-    buster.Rect.x = 0;
-    buster.Rect.y = 0;
-    buster.Rect.w = EGG_TILE_SIZE;
-    buster.Rect.h = EGG_TILE_SIZE;
+    buster.Pos.x = SCREEN_WIDTH/2;
+    buster.Pos.y = SCREEN_HEIGHT/2;
+    buster.Pos.w = EGG_TILE_SIZE;
+    buster.Pos.h = EGG_TILE_SIZE;
  
     SDL_RenderCopy(renderer, buster.busterTexture, NULL, &(buster.Pos));
 }
@@ -338,9 +345,13 @@ void moveBuster(){
 	else if(buster.Pos.y + EGG_TILE_SIZE > SCREEN_HEIGHT){
 		buster.Pos.y -= buster.velocity;
 	}
-    //verifyCollide(buster,matrix);
+
+
     if(move == true){
         reDraw();
+        if(verifyCollide(buster,matrix) == true){
+            reDraw();
+        }
         move = false;
     }
 }
@@ -355,27 +366,56 @@ void reDraw(){
 }
 
 int randomizeBuster(){
-    int luck = 5, generated;
+    int seed = time(NULL);
+    int luck = 100, generated;
+    srand(seed);
 
-    generated = (rand()%4)+6;
+    generated = (rand()%10);
+    while(generated < 5){
+        generated = (rand()%10);
+    }
+    
 
     while(generated == magic && luck > 0){
-        generated = (rand()%4)+6;
+        while(generated < 5){
+            generated = (rand()%10);
+        }
         luck--;
     }
 
     return generated;
 }
 
-void verifyCollide(Buster buster, Egg **matrix){
+bool verifyCollide(Buster buster, Egg **matrix){
     int i,j;
+    system("clear");
+    printf("BX: %d\n",(buster.Pos.x + 0) );
+    printf("BY: %d\n",(buster.Pos.y + 0) );
+    printf("%d\n",buster.typeCode);
 
-    for(i = 0; i < ROWS; i++){
-        for(j = 0; j < COLUMNS; j++){
-            if( (buster.Pos.x + EGG_TILE_SIZE) > (matrix[i][j]).x){
-                buster.Pos.x += buster.velocity;
-            }     
+    for (i = 0; i < ROWS; i++){
+        for (j = 0; j < COLUMNS; j++){
+            if((matrix[i][j]).colorCode != 0){
+                if( SDL_HasIntersection( &(buster.Pos), &((matrix[i][j]).Pos))){
+                    printf("Collide\n");
+                    destroyEggs(i,j);
+                    return true;
+                }   
+            }
+
         }
     }
+    return false;
+}
 
+void destroyEggs(int i, int j){
+
+    if(buster.typeCode == fire){
+        if((matrix[j][i]).colorCode == ghoulbeast){
+            if((matrix[j][i]).colorCode == (matrix[j-1][i]).colorCode){
+                (matrix[j][i]).colorCode = nil;
+                (matrix[j-1][i]).colorCode = nil;
+            }
+        }
+    }
 }

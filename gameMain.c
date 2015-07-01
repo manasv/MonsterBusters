@@ -1,13 +1,14 @@
 #include "Libs/mainLib.h"
 
+int game(int dificulty);
 
-int main(int argc, char const *argv[]){
- 	
+int game(int dificulty){
+
     bool isRunning = true;
     Uint32 start;
 
     sdlStartup(); //Startup SDL Subsystems
-    sdlMediaStartup(); //Startup SDL Media Resources
+    sdlMediaStartup(dificulty); //Startup SDL Media Resources
     allocateMatrix(&matrix); //Allocate Memory Space For The Matrix
     fillMatrix(matrix); //Fill Matrix with identifiers for Egg Types
     drawEggs(renderer,matrix); //Draw Eggs on renderer
@@ -29,7 +30,7 @@ int main(int argc, char const *argv[]){
         	moveBuster(); 
         }
 
-        //SDL_RenderPresent(renderer);
+        SDL_RenderPresent(renderer);
         if(TICKS_PER_FRAME > SDL_GetTicks() - start){
         	SDL_Delay(TICKS_PER_FRAME - (SDL_GetTicks() - start));
         }

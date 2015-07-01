@@ -260,7 +260,7 @@ int assignPosition(int rowNumber, int columnNumber){
 }
  
 void drawBuster(){
-    buster.typeCode = randomizeBuster();
+    buster.typeCode = 6; //randomizeBuster();
  
     switch(buster.typeCode){
                 case mint:
@@ -398,6 +398,7 @@ bool verifyCollide(Buster buster, Egg **matrix){
             if((matrix[i][j]).colorCode != 0){
                 if( SDL_HasIntersection( &(buster.Pos), &((matrix[i][j]).Pos))){
                     printf("Collide\n");
+                    //(matrix[i][j]).colorCode = nil;
                     destroyEggs(i,j);
                     return true;
                 }   
@@ -411,11 +412,28 @@ bool verifyCollide(Buster buster, Egg **matrix){
 void destroyEggs(int i, int j){
 
     if(buster.typeCode == fire){
-        if((matrix[j][i]).colorCode == ghoulbeast){
-            if((matrix[j][i]).colorCode == (matrix[j-1][i]).colorCode){
-                (matrix[j][i]).colorCode = nil;
-                (matrix[j-1][i]).colorCode = nil;
+        if((matrix[i][j]).colorCode == ghoulbeast){
+
+            if((matrix[i][j]).colorCode == (matrix[i][j-1]).colorCode){
+                (matrix[i][j]).colorCode = nil;
+                (matrix[i][j-1]).colorCode = nil;
             }
+
+            if((matrix[i][j]).colorCode == (matrix[i][j+1]).colorCode){
+                (matrix[i][j]).colorCode = nil;
+                (matrix[i][j+1]).colorCode = nil;
+            }
+
+            if((matrix[i][j]).colorCode == (matrix[i-1][j]).colorCode){
+                (matrix[i][j]).colorCode = nil;
+                (matrix[i-1][j]).colorCode = nil;
+            }
+
+            if((matrix[i][j]).colorCode == (matrix[i+1][j]).colorCode){
+                (matrix[i][j]).colorCode = nil;
+                (matrix[i+1][j]).colorCode = nil;
+            }
+
         }
     }
 }

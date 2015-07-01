@@ -36,24 +36,23 @@ void drawBuster();
 void moveBuster();
 void reDraw();
 int randomizeBuster();
-bool verifyCollide(Buster buster, Egg **matrix);
-void destroyEggs(int i, int j);
+bool verifyCollide(Buster *buster, Egg **matrix);
+void destroyEggs(int i, int j, int bt, int et);
  
 Egg **matrix = NULL;
 SDL_Window *window = NULL;
 SDL_Event events;
-SDL_Texture *texture = NULL, *background = NULL, *eggDestroyer = NULL;
+SDL_Texture *texture = NULL, *background = NULL;
 SDL_Renderer *renderer = NULL;
 Mix_Music *bgMusic = NULL;
-Buster buster;
+Buster *buster = NULL;
 bool move = true;
 int radius;
 
 bool sdlStartup(){
  
     bool success = true;
- 
- 
+
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 ){
         printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
         success = false;
@@ -260,34 +259,35 @@ int assignPosition(int rowNumber, int columnNumber){
 }
  
 void drawBuster(){
-    buster.typeCode = 6; //randomizeBuster();
+    buster = (Buster*) malloc(sizeof(Buster));
+    buster->typeCode = randomizeBuster();
  
-    switch(buster.typeCode){
+    switch(buster->typeCode){
                 case mint:
-                buster.busterTexture = IMG_LoadTexture(renderer, "Img/M.png"); 
+                buster->busterTexture = IMG_LoadTexture(renderer, "Img/M.png"); 
                 break;
                 case fire:
-                buster.busterTexture = IMG_LoadTexture(renderer, "Img/F.png"); 
+                buster->busterTexture = IMG_LoadTexture(renderer, "Img/F.png"); 
                 break;
                 case water:
-                buster.busterTexture = IMG_LoadTexture(renderer, "Img/W.png"); 
+                buster->busterTexture = IMG_LoadTexture(renderer, "Img/W.png"); 
                 break;
                 case ice:
-                buster.busterTexture = IMG_LoadTexture(renderer, "Img/I.png"); 
+                buster->busterTexture = IMG_LoadTexture(renderer, "Img/I.png"); 
                 break;
                 case magic:
-                buster.busterTexture = IMG_LoadTexture(renderer, "Img/MA.png"); 
+                buster->busterTexture = IMG_LoadTexture(renderer, "Img/MA.png"); 
                 break;
     } 
  
-    buster.velocity = 16;
+    buster->velocity = 16;
  
-    buster.Pos.x = SCREEN_WIDTH/2;
-    buster.Pos.y = SCREEN_HEIGHT/2;
-    buster.Pos.w = EGG_TILE_SIZE;
-    buster.Pos.h = EGG_TILE_SIZE;
+    buster->Pos.x = SCREEN_WIDTH/2;
+    buster->Pos.y = SCREEN_HEIGHT/2;
+    buster->Pos.w = EGG_TILE_SIZE;
+    buster->Pos.h = EGG_TILE_SIZE;
  
-    SDL_RenderCopy(renderer, buster.busterTexture, NULL, &(buster.Pos));
+    SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
 }
  
 void moveBuster(){
@@ -296,61 +296,61 @@ void moveBuster(){
 
 	if(press[SDL_SCANCODE_UP]){
 		if(press[SDL_SCANCODE_LEFT]){
-			buster.Pos.y -= buster.velocity/2; 
-			buster.Pos.x -= buster.velocity/2;
+			buster->Pos.y -= buster->velocity/2; 
+			buster->Pos.x -= buster->velocity/2;
 		}
 
 		if(press[SDL_SCANCODE_RIGHT]){
-			buster.Pos.y -= buster.velocity/2; 
-			buster.Pos.x += buster.velocity/2;
+			buster->Pos.y -= buster->velocity/2; 
+			buster->Pos.x += buster->velocity/2;
 		}
-		buster.Pos.y -= buster.velocity; 
+		buster->Pos.y -= buster->velocity; 
         move = true;
 	}
 
 	if(press[SDL_SCANCODE_DOWN]){
 		if(press[SDL_SCANCODE_LEFT]){
-			buster.Pos.y += buster.velocity/2; 
-			buster.Pos.x -= buster.velocity/2;
+			buster->Pos.y += buster->velocity/2; 
+			buster->Pos.x -= buster->velocity/2;
 		}
 
 		if(press[SDL_SCANCODE_RIGHT]){
-			buster.Pos.y += buster.velocity/2; 
-			buster.Pos.x += buster.velocity/2;
+			buster->Pos.y += buster->velocity/2; 
+			buster->Pos.x += buster->velocity/2;
 		}
-		buster.Pos.y += buster.velocity;
+		buster->Pos.y += buster->velocity;
         move = true; 
 	}
 
 	if(press[SDL_SCANCODE_LEFT]){
-		buster.Pos.x -= buster.velocity;
+		buster->Pos.x -= buster->velocity;
         move = true; 
 	}
 
 	if(press[SDL_SCANCODE_RIGHT]){
-		buster.Pos.x += buster.velocity;
+		buster->Pos.x += buster->velocity;
         move = true;
 	}
 
-	if(buster.Pos.x < 0 ){
-		buster.Pos.x += buster.velocity;
+	if(buster->Pos.x < 0 ){
+		buster->Pos.x += buster->velocity;
 	}
-	else if(buster.Pos.x + EGG_TILE_SIZE > SCREEN_WIDTH){
-		buster.Pos.x -= buster.velocity;
+	else if(buster->Pos.x + EGG_TILE_SIZE > SCREEN_WIDTH){
+		buster->Pos.x -= buster->velocity;
 	}
 
-	if(buster.Pos.y < 0){
-		buster.Pos.y += buster.velocity;
+	if(buster->Pos.y < 0){
+		buster->Pos.y += buster->velocity;
 	}
-	else if(buster.Pos.y + EGG_TILE_SIZE > SCREEN_HEIGHT){
-		buster.Pos.y -= buster.velocity;
+	else if(buster->Pos.y + EGG_TILE_SIZE > SCREEN_HEIGHT){
+		buster->Pos.y -= buster->velocity;
 	}
 
 
     if(move == true){
         reDraw();
         if(verifyCollide(buster,matrix) == true){
-            reDraw();
+            //reDraw();
         }
         move = false;
     }
@@ -361,7 +361,7 @@ void reDraw(){
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, background, NULL, NULL);
     drawEggs(renderer,matrix);
-    SDL_RenderCopy(renderer, buster.busterTexture, NULL, &(buster.Pos));
+    SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
     SDL_RenderPresent(renderer);
 }
 
@@ -370,15 +370,15 @@ int randomizeBuster(){
     int luck = 100, generated;
     srand(seed);
 
-    generated = (rand()%10);
+    generated = (rand()%9);
     while(generated < 5){
-        generated = (rand()%10);
+        generated = (rand()%9);
     }
     
 
     while(generated == magic && luck > 0){
         while(generated < 5){
-            generated = (rand()%10);
+            generated = (rand()%9);
         }
         luck--;
     }
@@ -386,20 +386,20 @@ int randomizeBuster(){
     return generated;
 }
 
-bool verifyCollide(Buster buster, Egg **matrix){
+bool verifyCollide(Buster *buster, Egg **matrix){
     int i,j;
     system("clear");
-    printf("BX: %d\n",(buster.Pos.x + 0) );
-    printf("BY: %d\n",(buster.Pos.y + 0) );
-    printf("%d\n",buster.typeCode);
+    printf("BX: %d\n",(buster->Pos.x + 0) );
+    printf("BY: %d\n",(buster->Pos.y + 0) );
+    printf("%d\n",buster->typeCode);
 
     for (i = 0; i < ROWS; i++){
         for (j = 0; j < COLUMNS; j++){
             if((matrix[i][j]).colorCode != 0){
-                if( SDL_HasIntersection( &(buster.Pos), &((matrix[i][j]).Pos))){
+                if( SDL_HasIntersection( &(buster->Pos), &((matrix[i][j]).Pos))){
                     printf("Collide\n");
                     //(matrix[i][j]).colorCode = nil;
-                    destroyEggs(i,j);
+                    destroyEggs(i,j,buster->typeCode,buster->typeCode-4);
                     return true;
                 }   
             }
@@ -409,29 +409,73 @@ bool verifyCollide(Buster buster, Egg **matrix){
     return false;
 }
 
-void destroyEggs(int i, int j){
+void destroyEggs(int i, int j,int bustertype, int eggtype){
 
-    if(buster.typeCode == fire){
-        if((matrix[i][j]).colorCode == ghoulbeast){
+    if(buster->typeCode == bustertype){
+        if((matrix[i][j]).colorCode == eggtype){
 
             if((matrix[i][j]).colorCode == (matrix[i][j-1]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i][j-1]).colorCode = nil;
+                free(buster);
+                buster = NULL;
+                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i][j+1]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i][j+1]).colorCode = nil;
+                free(buster);
+                buster = NULL;
+                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i-1][j]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i-1][j]).colorCode = nil;
+                free(buster);
+                buster = NULL;
+                drawBuster();
             }
 
             if((matrix[i][j]).colorCode == (matrix[i+1][j]).colorCode){
                 (matrix[i][j]).colorCode = nil;
                 (matrix[i+1][j]).colorCode = nil;
+                free(buster);
+                buster = NULL;
+                drawBuster();
+            }
+
+            if((matrix[i][j]).colorCode == (matrix[i-1][j-1]).colorCode){
+                (matrix[i][j]).colorCode = nil;
+                (matrix[i-1][j-1]).colorCode = nil;
+                free(buster);
+                buster = NULL;
+                drawBuster();
+            }
+
+            if((matrix[i][j]).colorCode == (matrix[i+1][j-1]).colorCode){
+                (matrix[i][j]).colorCode = nil;
+                (matrix[i+1][j-1]).colorCode = nil;
+                free(buster);
+                buster = NULL;
+                drawBuster();
+            }
+
+            if((matrix[i][j]).colorCode == (matrix[i+1][j+1]).colorCode){
+                (matrix[i][j]).colorCode = nil;
+                (matrix[i+1][j+1]).colorCode = nil;
+                free(buster);
+                buster = NULL;
+                drawBuster();
+            }
+
+            if((matrix[i][j]).colorCode == (matrix[i-1][j+1]).colorCode){
+                (matrix[i][j]).colorCode = nil;
+                (matrix[i-1][j+1]).colorCode = nil;
+                free(buster);
+                buster = NULL;
+                drawBuster();
             }
 
         }

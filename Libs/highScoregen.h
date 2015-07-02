@@ -1,10 +1,10 @@
-#include <stdio.h> //only used when stand alone
-#include <stdlib.h> //only used when stand alone
-#include <string.h> //only used when stand alone
-#include "Libs/mainLib.h" //only used when stand alone
+//#include <stdio.h> //only used when stand alone
+//#include <stdlib.h> //only used when stand alone
+//#include <string.h> //only used when stand alone
+//#include "Libs/mainLib.h" //only used when stand alone
 #include <SDL2/SDL_ttf.h>
-#include "Libs/libget.h" // getint getstr getfloat only used when stand alone
-#include "Libs/textinput.h"
+//#include "Libs/libget.h" // getint getstr getfloat only used when stand alone
+#include "textinput.h"
 
 SDL_Event keyPress;
 SDL_Window* w1 = NULL;
@@ -44,7 +44,7 @@ void render_screen();
 //cambiar esto a main si se necesita generar un highscore
 //antes de implementarlo en el juego!
 
-int main( int argc, char** argv ){
+void score_gen( int score ){
 	int i = 9, aux;
 	char* staux = malloc( 10 );
 	player player1;
@@ -69,8 +69,9 @@ int main( int argc, char** argv ){
 		fclose( fr );
 		printTable( highScore );
 	}
-	player1.score = getScore();
-	SDL_DestroyWindow( w1 );
+//	player1.score = getScore(); remplazar con obtener score antes. si es usado en el juego
+	player1.score = score;
+//	SDL_DestroyWindow( w1 );  solo se utiliza la ventana en version stand alone
 	//score sorting
 	highScore = sortHighScore( player1, highScore );
 	//ends sorting
@@ -84,9 +85,6 @@ int main( int argc, char** argv ){
 	fclose( fw );
 	fclose( fwb );
 	free( highScore );
-	Mix_Quit();
-	SDL_Quit();
-	return 0;
 }
 
 //Score functions that WILL be used on guiScore.c
@@ -175,25 +173,26 @@ player* sortHighScore( player player1, player* highScore ){
 }
 
 void init_systems(){
-	SDL_Init( SDL_INIT_EVERYTHING);
-	IMG_Init( IMG_INIT_JPG | IMG_INIT_PNG );
+//	SDL_Init( SDL_INIT_EVERYTHING);
+//	IMG_Init( IMG_INIT_JPG | IMG_INIT_PNG );
 	TTF_Init();
 	score_font = TTF_OpenFont( "Fonts/Pragmatapro for Powerline.ttf", 18 );
-	w1 = SDL_CreateWindow( "Score", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 500, 500, 0 );
-	score_render = SDL_CreateRenderer( w1, -1, SDL_RENDERER_ACCELERATED );
-	window_surface = SDL_GetWindowSurface( w1 );
-	loading_surface = IMG_Load( "Img/background.jpg" );
-	SDL_BlitSurface( loading_surface, NULL, window_surface, NULL );
-	SDL_UpdateWindowSurface( w1 );
-	SDL_FreeSurface( loading_surface );
-	bg_texture = SDL_CreateTextureFromSurface( score_render, window_surface );
-	loading_surface = IMG_Load( "Img/coin.png" );
-	coin = SDL_CreateTextureFromSurface( score_render, loading_surface );
-	SDL_FreeSurface( loading_surface );
-	SDL_RenderClear( score_render );
-	SDL_RenderCopy( score_render, bg_texture, NULL, NULL );
-	SDL_RenderCopy( score_render, coin, &coinRect, &coinPos );
-	SDL_RenderPresent( score_render );
+//	w1 = SDL_CreateWindow( "Score", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 500, 500, 0 );
+//	score_render = SDL_CreateRenderer( w1, -1, SDL_RENDERER_ACCELERATED );
+//	window_surface = SDL_GetWindowSurface( w1 );
+//	loading_surface = IMG_Load( "Img/background.jpg" );
+//	SDL_BlitSurface( loading_surface, NULL, window_surface, NULL );
+//	SDL_UpdateWindowSurface( w1 );
+//	SDL_FreeSurface( loading_surface );
+//	bg_texture = SDL_CreateTextureFromSurface( score_render, window_surface );
+//	loading_surface = IMG_Load( "Img/coin.png" );
+//	coin = SDL_CreateTextureFromSurface( score_render, loading_surface );
+//	SDL_FreeSurface( loading_surface );
+//	SDL_RenderClear( score_render );
+//	SDL_RenderCopy( score_render, bg_texture, NULL, NULL );
+//	SDL_RenderCopy( score_render, coin, &coinRect, &coinPos );
+//	SDL_RenderPresent( score_render );
+//descomentar todo para stand alone!
 }
 
 void render_screen(){

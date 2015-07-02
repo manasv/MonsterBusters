@@ -36,6 +36,7 @@ int game(int dificulty){
         }
         
     }
+	score_gen( score );
     closeALL();
     return 0;
 }

@@ -1,5 +1,5 @@
 //#include <stdio.h> //only used when stand alone
-#include "highScore.h" //only used when stand alone
+//#include "highScore.h" //only used when stand alone
 //#include <SDL2/SDL_ttf.h> //only used when stand alone
 
 #define SCOREW 300

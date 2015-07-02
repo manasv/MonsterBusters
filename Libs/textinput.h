@@ -40,7 +40,7 @@ void initWindows(){
 	);
 	inputRender = SDL_CreateRenderer( textBox, -1, SDL_RENDERER_ACCELERATED );
 	boxSurface = SDL_GetWindowSurface( textBox );
-	loadingSurface = IMG_Load( "./Img/background.jpg" );
+	loadingSurface = IMG_Load( "./Img/NAME.jpg" );
 	SDL_BlitSurface( loadingSurface, NULL, boxSurface, NULL );
 	SDL_UpdateWindowSurface( textBox );
 	textbox_bg = SDL_CreateTextureFromSurface( inputRender, loadingSurface);

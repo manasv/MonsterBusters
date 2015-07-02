@@ -6,6 +6,7 @@
 #include <math.h>
 #include <time.h>
 #include "macros.h"
+#include "highScoregen.h"
  
 typedef enum bool{false,true}bool;
 enum tileCode{nil,cthulhu,ghoulbeast,kumonga,seaserpent,mint,fire,water,ice,magic};
@@ -31,27 +32,40 @@ Egg* fillMatrix(Egg **matrix);
 void showMatrix(Egg **matrix);
 void freeEggs(Egg **matrix, int rows);
 void drawEggs(SDL_Renderer *renderer,Egg **matrix);
+void drawCurrentScore( SDL_Renderer* renderer, char* score_char ); // imprime Score en pantalla!
 int assignPosition(int rowNumber, int columnNumber);
 void drawBuster();
 void moveBuster();
 void reDraw();
 int randomizeBuster();
 bool verifyCollide(Buster *buster, Egg **matrix);
-void destroyEggs(int i, int j, int bt, int et);
+void destroyEggs(int i, int j, int bt, int et );
  
 Egg **matrix = NULL;
 SDL_Window *window = NULL;
 SDL_Event events;
 SDL_Texture *texture = NULL, *background = NULL;
+SDL_Texture* scoreTextureFont = NULL;
+SDL_Surface* scoreTextSurface = NULL;
+SDL_Rect textPos_score = { 320, 50, 0, 0 };
 SDL_Renderer *renderer = NULL;
 Mix_Music *bgMusic = NULL;
 Buster *buster = NULL;
+int score = 0; //se pasara como argumento a la funcion score_gen!
+TTF_Font* scoreDisplayFont = NULL;
+SDL_Color whitescore = { 255, 255, 255 };
+SDL_Color blackscore = { 0, 0, 0, 155 };
+char* score_char;
 bool move = true;
 int radius;
+int globalDificulty;
 
 bool sdlStartup(){
  
     bool success = true;
+	score_char = malloc( 25 );
+	sprintf( score_char, "%d", 0 );
+
 
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 ){
         printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
@@ -87,6 +101,8 @@ bool sdlStartup(){
                     printf( "SDL_mixer Error: %s\n", Mix_GetError() );
                     success = false;
                 }
+				TTF_Init();
+				scoreDisplayFont = TTF_OpenFont( "./Fonts/PragmataPro for Powerline.ttf", 25 );
             }
         }
     }
@@ -96,7 +112,7 @@ bool sdlStartup(){
  
 bool sdlMediaStartup(int dificulty){
     bool success;
-
+	globalDificulty = dificulty;
     switch(dificulty){
         case easy:
             background = IMG_LoadTexture(renderer,"Img/BG_EASY.jpg");
@@ -114,8 +130,17 @@ bool sdlMediaStartup(int dificulty){
     }
 
     SDL_RenderCopy(renderer, background, NULL, NULL);
- 
-    bgMusic = Mix_LoadMUS("Sound/music.mp3");
+	switch(dificulty){
+		case easy:
+			bgMusic = Mix_LoadMUS("Sound/musice.mp3");
+			break;
+		case normal:
+			bgMusic = Mix_LoadMUS("Sound/musicm.mp3");
+			break;
+		case hard:
+			bgMusic = Mix_LoadMUS("Sound/musich.mp3");
+			break;
+	}
     if( bgMusic == NULL ){
         printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
@@ -288,6 +313,7 @@ void drawBuster(){
     buster->Pos.h = EGG_TILE_SIZE;
  
     SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
+	printf( "%s", score_char );
 }
  
 void moveBuster(){
@@ -361,7 +387,8 @@ void reDraw(){
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, background, NULL, NULL);
     drawEggs(renderer,matrix);
-    SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
+	SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
+	drawCurrentScore( renderer, score_char );
     SDL_RenderPresent(renderer);
 }
 
@@ -398,8 +425,8 @@ bool verifyCollide(Buster *buster, Egg **matrix){
             if((matrix[i][j]).colorCode != 0){
                 if( SDL_HasIntersection( &(buster->Pos), &((matrix[i][j]).Pos))){
                     printf("Collide\n");
-                    destroyEggs(i,j,buster->typeCode,buster->typeCode-4);
-                    return true;
+                    destroyEggs(i,j,buster->typeCode,buster->typeCode-4 );
+					return true;
                 }
             }
 
@@ -408,7 +435,23 @@ bool verifyCollide(Buster *buster, Egg **matrix){
     return false;
 }
 
-void destroyEggs(int i, int j,int bustertype, int eggtype){
+
+//para dibujar el score!
+void drawCurrentScore( SDL_Renderer* renderer, char* score_char ){
+	SDL_Rect textPos_score = { 310, 500, 0, 0 };
+	scoreTextSurface = TTF_RenderUTF8_Shaded( scoreDisplayFont, score_char, whitescore, blackscore );
+	textPos_score.w = scoreTextSurface->w;
+	textPos_score.h = scoreTextSurface->h;
+	scoreTextureFont = SDL_CreateTextureFromSurface( renderer, scoreTextSurface );
+	SDL_SetTextureBlendMode( scoreTextureFont, SDL_BLENDMODE_BLEND );
+	SDL_SetTextureAlphaMod( scoreTextureFont, 99 );
+	SDL_RenderCopy( renderer, scoreTextureFont, NULL, &textPos_score );
+	SDL_FreeSurface( scoreTextSurface );
+}
+
+//termina de dibujar el Score!
+
+void destroyEggs(int i, int j,int bustertype, int eggtype ){
 	
 	bool singleCollide = true;
 	
@@ -481,6 +524,19 @@ void destroyEggs(int i, int j,int bustertype, int eggtype){
 
 			if(singleCollide == false){
 				free(buster);
+				switch( globalDificulty ){
+					case easy:
+						score += 25;
+						break;
+					case normal:
+						score += 50;
+						break;
+					case hard:
+						score += 100;
+						break;
+				}
+				sprintf( score_char, "%d", score );
+				drawCurrentScore( renderer, score_char );
 				buster = NULL;
 				drawBuster();
 			}

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Libs/mainLib.h"
 #include <SDL2/SDL_ttf.h>
+#include "Libs/mainLib.h"
 #include "Libs/libget.h"
 #include "Libs/guiScore.h"
 #include "gameMain.c"

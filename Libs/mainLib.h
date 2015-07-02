@@ -423,7 +423,7 @@ void destroyEggs(int i, int j,int bustertype, int eggtype){
 					}
 				}
 
-				if(j != 19){
+				if(j != 18){
 					if((matrix[i][j]).colorCode == (matrix[i][j+1]).colorCode){
 						(matrix[i][j]).colorCode = nil;
 						(matrix[i][j+1]).colorCode = nil;
@@ -439,7 +439,7 @@ void destroyEggs(int i, int j,int bustertype, int eggtype){
 					}
 				}
 
-				if(i != 20){
+				if(i != 19){
 					if((matrix[i][j]).colorCode == (matrix[i+1][j]).colorCode){
 						(matrix[i][j]).colorCode = nil;
 						(matrix[i+1][j]).colorCode = nil;
@@ -455,7 +455,7 @@ void destroyEggs(int i, int j,int bustertype, int eggtype){
 					}
 				}
 
-				if(i != 20 && j != 0){
+				if(i != 19 && j != 0){
 					if((matrix[i][j]).colorCode == (matrix[i+1][j-1]).colorCode){
 						(matrix[i][j]).colorCode = nil;
 						(matrix[i+1][j-1]).colorCode = nil;
@@ -463,7 +463,7 @@ void destroyEggs(int i, int j,int bustertype, int eggtype){
 					}
 				}
 
-				if(i != 20 && j != 19){
+				if(i != 19 && j != 18){
 					if((matrix[i][j]).colorCode == (matrix[i+1][j+1]).colorCode){
 						(matrix[i][j]).colorCode = nil;
 						(matrix[i+1][j+1]).colorCode = nil;
@@ -471,7 +471,7 @@ void destroyEggs(int i, int j,int bustertype, int eggtype){
 					}
 				}
 
-				if(i != 0 && j != 19){
+				if(i != 0 && j != 18){
 					if((matrix[i][j]).colorCode == (matrix[i-1][j+1]).colorCode){
 						(matrix[i][j]).colorCode = nil;
 						(matrix[i-1][j+1]).colorCode = nil;

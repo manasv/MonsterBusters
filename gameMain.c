@@ -5,18 +5,22 @@ int game(int dificulty);
 int game(int dificulty){
 
     bool isRunning = true;
-    Uint32 start;
 
     sdlStartup(); //Startup SDL Subsystems
     sdlMediaStartup(dificulty); //Startup SDL Media Resources
     allocateMatrix(&matrix); //Allocate Memory Space For The Matrix
     fillMatrix(matrix); //Fill Matrix with identifiers for Egg Types
-    drawEggs(renderer,matrix); //Draw Eggs on renderer
+    drawEggs(renderer,matrix,no_generated); //Draw Eggs on renderer
     drawBuster(); //Draw The Egg Buster on screen center
     showMatrix(matrix); //Show Matrix on Console, for testing purposes
+
+    currentTime = SDL_GetTicks();
  
     while(isRunning){
     	start = SDL_GetTicks();
+        oldTime = currentTime;
+        currentTime = SDL_GetTicks();
+
         if( SDL_PollEvent(&events) != 0 ){
         	switch(events.type){
 
@@ -33,6 +37,10 @@ int game(int dificulty){
         SDL_RenderPresent(renderer);
         if(TICKS_PER_FRAME > SDL_GetTicks() - start){
         	SDL_Delay(TICKS_PER_FRAME - (SDL_GetTicks() - start));
+        }
+
+        if((currentTime/1000)%20 == 0){
+            theHellisComing(globalDificulty);
         }
         
     }

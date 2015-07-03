@@ -11,7 +11,8 @@
 typedef enum bool{false,true}bool;
 enum tileCode{nil,cthulhu,ghoulbeast,kumonga,seaserpent,mint,fire,water,ice,magic};
 enum dificulty{none,easy,normal,hard};
- 
+enum generated{no_generated,generated};
+
 typedef struct{
     SDL_Rect Pos;
     int colorCode;
@@ -31,12 +32,12 @@ void allocateMatrix(Egg ***matrix);
 Egg* fillMatrix(Egg **matrix);
 void showMatrix(Egg **matrix);
 void freeEggs(Egg **matrix, int rows);
-void drawEggs(SDL_Renderer *renderer,Egg **matrix);
+void drawEggs(SDL_Renderer *renderer,Egg **matrix,int flag);
 void drawCurrentScore( SDL_Renderer* renderer, char* score_char ); // imprime Score en pantalla!
 int assignPosition(int rowNumber, int columnNumber);
 void drawBuster();
 void moveBuster();
-void reDraw();
+void reDraw(int flag);
 int randomizeBuster();
 bool verifyCollide(Buster *buster, Egg **matrix);
 void destroyEggs(int i, int j, int bt, int et );
@@ -58,8 +59,8 @@ SDL_Color whitescore = { 255, 255, 255 };
 SDL_Color blackscore = { 0, 0, 0, 155 };
 char* score_char;
 bool move = true;
-int radius;
-int globalDificulty;
+int radius,globalDificulty;
+Uint32 start,oldTime,currentTime;
 
 bool sdlStartup(){
  
@@ -73,7 +74,7 @@ bool sdlStartup(){
         success = false;
     }
     else{
-        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "best" ) ){
+        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear" ) ){
             printf( "Warning: Linear texture filtering not enabled!" );
         }
  
@@ -225,7 +226,7 @@ void freeEggs(Egg **matrix, int rows){
     matrix = NULL;
 }
  
-void drawEggs(SDL_Renderer *renderer,Egg **matrix){
+void drawEggs(SDL_Renderer *renderer,Egg **matrix, int flag){
     int i,j;
     float circleEQ;
  
@@ -255,7 +256,9 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix){
             (matrix[i][j]).Pos.w = EGG_TILE_SIZE;
             (matrix[i][j]).Pos.h = EGG_TILE_SIZE;
             
- 
+ 			if(flag == 1)
+ 				radius = 100;
+
             circleEQ = pow(((matrix[i][j]).Pos.x)-(SCREEN_WIDTH/2),2) + 
             pow((((matrix[i][j]).Pos.y)-(SCREEN_HEIGHT/2)),2);
  
@@ -380,7 +383,7 @@ void moveBuster(){
 
 
     if(move == true){
-        reDraw();
+        reDraw(no_generated);
         if(verifyCollide(buster,matrix) == true){
             //reDraw();
         }
@@ -389,10 +392,10 @@ void moveBuster(){
 }
  
  
-void reDraw(){
+void reDraw(int flag){
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, background, NULL, NULL);
-    drawEggs(renderer,matrix);
+    drawEggs(renderer,matrix,flag);
 	SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
 	drawCurrentScore( renderer, score_char );
     SDL_RenderPresent(renderer);
@@ -553,6 +556,7 @@ void destroyEggs(int i, int j,int bustertype, int eggtype ){
 
 void theHellisComing(int dificulty){
 	int i = 0, j = 0, eggsGenerated;
+	float circleEQ;
 	eggsGenerated = 0;
 	int state = 0;
 
@@ -566,13 +570,17 @@ void theHellisComing(int dificulty){
 		if((matrix[i][j]).colorCode == nil){
 			(matrix[i][j]).colorCode = (rand()%4)+1;
 			printf("Se generó %d\n",(matrix[i][j]).colorCode);
-			eggsGenerated++;
+			
 			printf("HUEVOS Generados: %d\n",eggsGenerated);
-			state = 1;
+
+            eggsGenerated++;
+            state = 1;
+            
+            reDraw(generated);
 		}
 	}
 	printf("DIBUJARA\n");
 	if(state == 1){
-		reDraw();
+		reDraw(generated);
 	}
 }

@@ -37,6 +37,15 @@ int game(int dificulty){
         
     }
 	score_gen( score );
-    closeALL();
+//  closeALL();
+	if( !game_over() ){
+		closeALL();
+	}else{
+		SDL_DestroyWindow( window );
+		score = 0; //reinicia el score a 0 para la proxima jugada
+		Mix_HaltMusic();
+		main();		
+	}
+	Mix_ResumeMusic();
     return 0;
 }

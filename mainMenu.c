@@ -5,6 +5,7 @@
 #include "Libs/mainLib.h"
 #include "Libs/libget.h"
 #include "Libs/guiScore.h"
+#include "Libs/gameover.h"
 #include "gameMain.c"
 
 #define WINDOW_H 500
@@ -72,6 +73,7 @@ int main( int argc, char** argv ){
 	}
 
 	beep = Mix_LoadWAV( "Sound/select.wav" );
+	Mix_ResumeMusic();
 	//image rect details
 	initMenu();
 	//Infinite loop event

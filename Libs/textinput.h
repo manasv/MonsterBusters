@@ -88,8 +88,6 @@ void inputActivate( char* playerName ){
 	}
 	sprintf( playerName, "%s", compose );
 	SDL_DestroyWindow( textBox );
-	IMG_Quit();
-	SDL_Quit();
 }
 
 void updateInput( char* compose ){

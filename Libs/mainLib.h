@@ -40,6 +40,7 @@ void reDraw();
 int randomizeBuster();
 bool verifyCollide(Buster *buster, Egg **matrix);
 void destroyEggs(int i, int j, int bt, int et );
+void theHellisComing(int dificulty);
  
 Egg **matrix = NULL;
 SDL_Window *window = NULL;
@@ -358,6 +359,11 @@ void moveBuster(){
         move = true;
 	}
 
+	if(press[SDL_SCANCODE_P]){
+		theHellisComing(globalDificulty);
+        move = true;
+	}
+
 	if(buster->Pos.x < 0 ){
 		buster->Pos.x += buster->velocity;
 	}
@@ -542,5 +548,31 @@ void destroyEggs(int i, int j,int bustertype, int eggtype ){
 			}
 
 		}
+	}
+}
+
+void theHellisComing(int dificulty){
+	int i = 0, j = 0, eggsGenerated;
+	eggsGenerated = 0;
+	int state = 0;
+
+	printf("ENTRO A LA FUNCION!\n");
+
+	while(eggsGenerated < (dificulty+2)){
+		i = rand()%ROWS;
+		j = rand()%COLUMNS;
+		printf("BUCLE\n");
+		printf("i:%d j:%d\n",i,j);
+		if((matrix[i][j]).colorCode == nil){
+			(matrix[i][j]).colorCode = (rand()%4)+1;
+			printf("Se generó %d\n",(matrix[i][j]).colorCode);
+			eggsGenerated++;
+			printf("HUEVOS Generados: %d\n",eggsGenerated);
+			state = 1;
+		}
+	}
+	printf("DIBUJARA\n");
+	if(state == 1){
+		reDraw();
 	}
 }

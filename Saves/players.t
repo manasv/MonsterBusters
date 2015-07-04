@@ -1,0 +1,10 @@
+Carajo
+Fernando
+nope
+fernanndo
+Fernando
+carajo
+Fernando
+NOPOEPE
+noope
+Carlos

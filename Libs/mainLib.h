@@ -7,7 +7,8 @@
 #include <time.h>
 #include "macros.h"
 #include "highScoregen.h"
- 
+#include "arm_final.h"
+
 typedef enum bool{false,true}bool;
 enum tileCode{nil,cthulhu,ghoulbeast,kumonga,seaserpent,mint,fire,water,ice,magic};
 enum dificulty{none,easy,normal,hard};
@@ -323,7 +324,6 @@ void drawBuster(){
 void moveBuster(){
 
 	const Uint8 *press = SDL_GetKeyboardState(NULL);
-
 	if(press[SDL_SCANCODE_UP]){
 		if(press[SDL_SCANCODE_LEFT]){
 			buster->Pos.y -= buster->velocity; 
@@ -397,6 +397,7 @@ void reDraw(int flag){
     SDL_RenderCopy(renderer, background, NULL, NULL);
     drawEggs(renderer,matrix,flag);
 	SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
+	draw_arm( renderer );
 	drawCurrentScore( renderer, score_char );
     SDL_RenderPresent(renderer);
 }
@@ -459,6 +460,38 @@ void drawCurrentScore( SDL_Renderer* renderer, char* score_char ){
 }
 
 //termina de dibujar el Score!
+
+void move_arm(){
+	const Uint8 *press = SDL_GetKeyboardState(NULL);
+	if(press[SDL_SCANCODE_LEFT]){
+		update_angle(0, ANGLE_STEP);
+		move = true;
+	}
+	if(press[SDL_SCANCODE_RIGHT]){
+		update_angle(0, -ANGLE_STEP);
+		move = true;
+	}
+	if(press[SDL_SCANCODE_UP]){
+		update_angle(1, ANGLE_STEP);
+		move = true;
+	}
+	if(press[SDL_SCANCODE_DOWN]){
+		update_angle(1, -ANGLE_STEP);
+		move = true;
+	}
+	if(press[SDL_SCANCODE_W]){
+		update_angle(2, ANGLE_STEP);
+		move = true;
+	}
+	if(press[SDL_SCANCODE_S]){
+		update_angle(2, -ANGLE_STEP);
+		move = true;
+	}
+    if(move == true){
+        reDraw(generated);
+	}
+   	move = false;
+}
 
 void destroyEggs(int i, int j,int bustertype, int eggtype ){
 	

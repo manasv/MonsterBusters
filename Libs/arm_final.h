@@ -5,7 +5,7 @@
 //#include <SDL2/SDL_image.h>  only used when stand alone!
 //#include <SDL2/SDL_video.h>  only used when stand alone!
 
-#define WINDOW_HEIGHT 600
+#define WINDOW_HEIGHT 640
 #define WINDOW_CENTER (WINDOW_HEIGHT/2)
 #define SEGMENT_COUNT 3
 

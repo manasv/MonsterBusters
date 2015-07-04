@@ -609,6 +609,7 @@ void destroyEggs(int i, int j,int bustertype, int eggtype ){
 
 void theHellisComing(int dificulty){
 	int i = 0, j = 0, eggsGenerated;
+	int lim1 = 6, lim2 = 11;
 	float circleEQ;
 	eggsGenerated = 0;
 	int state = 0;
@@ -620,13 +621,16 @@ void theHellisComing(int dificulty){
 		j = rand()%COLUMNS;
 		printf("BUCLE\n");
 		printf("i:%d j:%d\n",i,j);
-		if((matrix[i][j]).colorCode == nil){
+		if((matrix[i][j]).colorCode == nil && i < lim1 || i > lim2 &&
+			j < lim1 || j > lim2){
 			(matrix[i][j]).colorCode = (rand()%4)+1;
 			printf("Se generó %d\n",(matrix[i][j]).colorCode);
 			
 			printf("HUEVOS Generados: %d\n",eggsGenerated);
 
             eggsGenerated++;
+			lim1++;
+			lim2--;
             state = 1;
             
             reDraw(generated);

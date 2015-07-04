@@ -52,6 +52,7 @@ SDL_Texture* scoreTextureFont = NULL;
 SDL_Surface* scoreTextSurface = NULL;
 SDL_Rect textPos_score = { 320, 50, 0, 0 };
 SDL_Renderer *renderer = NULL;
+SDL_Renderer* renderer2 = NULL;
 Mix_Music *bgMusic = NULL;
 Buster *buster = NULL;
 int score = 0; //se pasara como argumento a la funcion score_gen!
@@ -87,6 +88,7 @@ bool sdlStartup(){
         }
         else{
             renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+            renderer2 = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
             if( renderer == NULL ){
                 printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
                 success = false;
@@ -312,8 +314,8 @@ void drawBuster(){
  
     buster->velocity = 16;
  
-    buster->Pos.x = SCREEN_WIDTH/2;
-    buster->Pos.y = SCREEN_HEIGHT/2;
+    buster->Pos.x = WINDOW_CENTER + relative_pos.x + EGG_TILE_SIZE/2 -13;
+    buster->Pos.y = WINDOW_CENTER + relative_pos.y - EGG_TILE_SIZE + 13;
     buster->Pos.w = EGG_TILE_SIZE;
     buster->Pos.h = EGG_TILE_SIZE;
  
@@ -322,81 +324,50 @@ void drawBuster(){
 }
  
 void moveBuster(){
-
+	float x = 0, y = 0;
+	int i, j;
 	const Uint8 *press = SDL_GetKeyboardState(NULL);
-	if(press[SDL_SCANCODE_UP]){
-		if(press[SDL_SCANCODE_LEFT]){
-			buster->Pos.y -= buster->velocity; 
-			buster->Pos.x -= buster->velocity;
-		}
-
-		if(press[SDL_SCANCODE_RIGHT]){
-			buster->Pos.y -= buster->velocity; 
-			buster->Pos.x += buster->velocity;
-		}
-		buster->Pos.y -= buster->velocity; 
-        move = true;
+	if( x != WINDOW_CENTER + relative_pos.x + EGG_TILE_SIZE/2 -13){
+		buster->Pos.x = WINDOW_CENTER + relative_pos.x + EGG_TILE_SIZE/2 -13;
+		buster->Pos.y = WINDOW_CENTER + relative_pos.y - EGG_TILE_SIZE + 13;
+		buster->Pos.w = EGG_TILE_SIZE;
+		buster->Pos.h = EGG_TILE_SIZE;
+		move = true;
 	}
+    x = WINDOW_CENTER + relative_pos.x + EGG_TILE_SIZE/2 -13;
+	y = WINDOW_CENTER + relative_pos.x + EGG_TILE_SIZE + 13;
 
-	if(press[SDL_SCANCODE_DOWN]){
-		if(press[SDL_SCANCODE_LEFT]){
-			buster->Pos.y += buster->velocity; 
-			buster->Pos.x -= buster->velocity;
-		}
-
-		if(press[SDL_SCANCODE_RIGHT]){
-			buster->Pos.y += buster->velocity; 
-			buster->Pos.x += buster->velocity;
-		}
-		buster->Pos.y += buster->velocity;
-        move = true; 
-	}
-
-	if(press[SDL_SCANCODE_LEFT]){
-		buster->Pos.x -= buster->velocity;
-        move = true; 
-	}
-
-	if(press[SDL_SCANCODE_RIGHT]){
-		buster->Pos.x += buster->velocity;
-        move = true;
-	}
+	move = true;
 
 	if(press[SDL_SCANCODE_P]){
 		theHellisComing(globalDificulty);
         move = true;
 	}
-
-	if(buster->Pos.x < 0 ){
-		buster->Pos.x += buster->velocity;
+	if(press[SDL_SCANCODE_SPACE]){
+		while( verifyCollide(buster,matrix) != true ){	
+			buster->Pos.x += i * cos( angle_rad );
+			buster->Pos.y += j * sin( angle_rad );
+			i++; j++;
+			if( buster->Pos.x > SCREEN_WIDTH || buster->Pos.y > SCREEN_HEIGHT ){
+				break;
+			}else if( buster->Pos.x < 0 || buster->Pos.y < 0 ){
+				break;
+			}
+			move = true;
+			if(move == true){
+				reDraw(no_generated);
+				move = false;
+			}
+		}
 	}
-	else if(buster->Pos.x + EGG_TILE_SIZE > SCREEN_WIDTH){
-		buster->Pos.x -= buster->velocity;
-	}
-
-	if(buster->Pos.y < 0){
-		buster->Pos.y += buster->velocity;
-	}
-	else if(buster->Pos.y + EGG_TILE_SIZE > SCREEN_HEIGHT){
-		buster->Pos.y -= buster->velocity;
-	}
-
-
-    if(move == true){
-        reDraw(no_generated);
-        if(verifyCollide(buster,matrix) == true){
-            //reDraw();
-        }
-        move = false;
-    }
 }
  
  
 void reDraw(int flag){
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, background, NULL, NULL);
-    drawEggs(renderer,matrix,flag);
 	SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
+    drawEggs(renderer,matrix,flag);
 	draw_arm( renderer );
 	drawCurrentScore( renderer, score_char );
     SDL_RenderPresent(renderer);

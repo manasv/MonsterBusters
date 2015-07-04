@@ -46,7 +46,13 @@ GAME_Arm arm;
 double **rotat_mat = NULL;
 double **trans_mat = NULL;
 
+vector translated_pos;
+vector rotated_pos;
+vector relative_pos = {0.0, 0.0};
+SDL_Rect obj_rect;
 double limits[] = {0.0, 90.0, 90.0};
+double angle, angle_rad;
+double valuex, valuey;
 
 double calculate_vector_angle(vector *v) {
 	double radians = acos(v->x/sqrt(pow(v->x, 2.0) + pow(v->y, 2.0)));
@@ -149,12 +155,11 @@ void translate_vector(vector *pos, int x, int y, vector *result) {
 
 void draw_arm( SDL_Renderer* renderer ) {
 	int i;
-	SDL_Rect obj_rect;
-	vector translated_pos;
-	vector rotated_pos;
-	vector relative_pos = {0.0, 0.0};
+	translated_pos;
+	rotated_pos;
+	relative_pos.x = 0.0;
+	relative_pos.y = 0.0;
 	SDL_Point center = {-13, 0.0};
-	double angle, angle_rad;
 
 	translate_vector(&(axis_obj.position), WINDOW_CENTER, WINDOW_CENTER, &translated_pos);
 	obj_rect.w = axis_obj.t.w;

@@ -11,10 +11,12 @@ int game(int dificulty){
     allocateMatrix(&matrix); //Allocate Memory Space For The Matrix
     fillMatrix(matrix); //Fill Matrix with identifiers for Egg Types
     drawEggs(renderer,matrix,no_generated); //Draw Eggs on renderer
-    drawBuster(); //Draw The Egg Buster on screen center
     showMatrix(matrix); //Show Matrix on Console, for testing purposesa
 	init_matrix();
 	load_images( renderer );
+	drawBuster(); //Draw The Egg Buster on screen center
+//	move_arm();
+//	drawBuster();
 
     currentTime = SDL_GetTicks();
  
@@ -34,7 +36,9 @@ int game(int dificulty){
         			break;
         	}
         	move_arm();
-        }
+			moveBuster();
+//		    drawBuster(); //Draw The Egg Buster on screen center
+		}
 
         SDL_RenderPresent(renderer);
         if(TICKS_PER_FRAME > SDL_GetTicks() - start){

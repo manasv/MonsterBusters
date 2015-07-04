@@ -25,8 +25,16 @@ typedef struct{
     SDL_Texture *busterTexture;
     SDL_Rect Pos;
 }Buster;
+
+typedef struct{
+	SDL_Texture* C;
+	SDL_Texture* G;
+	SDL_Texture* K;
+	SDL_Texture* S;
+}EggTexture;
  
 bool sdlStartup();
+void startEggTextures( SDL_Renderer* renderer );
 bool sdlMediaStartup(int dificulty);
 void closeALL();
 void allocateMatrix(Egg ***matrix);
@@ -43,6 +51,7 @@ int randomizeBuster();
 bool verifyCollide(Buster *buster, Egg **matrix);
 void destroyEggs(int i, int j, int bt, int et );
 void theHellisComing(int dificulty);
+bool verifyCollideArm(Egg **matrix);
  
 Egg **matrix = NULL;
 SDL_Window *window = NULL;
@@ -63,6 +72,9 @@ char* score_char;
 bool move = true;
 int radius,globalDificulty;
 Uint32 start,oldTime,currentTime;
+
+EggTexture Type = { NULL, NULL, NULL, NULL };
+
 
 bool sdlStartup(){
  
@@ -88,7 +100,6 @@ bool sdlStartup(){
         }
         else{
             renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
-            renderer2 = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
             if( renderer == NULL ){
                 printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
                 success = false;
@@ -121,15 +132,15 @@ bool sdlMediaStartup(int dificulty){
     switch(dificulty){
         case easy:
             background = IMG_LoadTexture(renderer,"Img/BG_EASY.jpg");
-            radius = 250;
+            radius = 300;
             break;
         case normal:
             background = IMG_LoadTexture(renderer,"Img/BG_NORMAL.jpg");
-            radius = 200;
+            radius = 250;
             break;
         case hard:
             background = IMG_LoadTexture(renderer,"Img/BG_HARD.jpg");
-            radius = 150;
+            radius = 200;
             break;
 
     }
@@ -158,8 +169,6 @@ bool sdlMediaStartup(int dificulty){
 void closeALL(){
     freeEggs(matrix,ROWS);
  
-    SDL_DestroyTexture(texture);
-    SDL_DestroyTexture(background);
     texture = NULL;
     background = NULL;
  
@@ -177,7 +186,14 @@ void closeALL(){
     SDL_Quit();
  
 }
- 
+
+void startEggTextures( SDL_Renderer* renderer ){
+	Type.C = IMG_LoadTexture( renderer, "Img/C.png" );
+	Type.G = IMG_LoadTexture( renderer, "Img/G.png" );
+	Type.K = IMG_LoadTexture( renderer, "Img/K.png" );
+	Type.S = IMG_LoadTexture( renderer, "Img/S.png" );
+}
+
 void allocateMatrix(Egg ***matrix){
     int i;
  
@@ -232,26 +248,25 @@ void freeEggs(Egg **matrix, int rows){
 void drawEggs(SDL_Renderer *renderer,Egg **matrix, int flag){
     int i,j;
     float circleEQ;
- 
     SDL_Rect newPosition;
+	startEggTextures( renderer );
  
     for(i=0;i<ROWS;i++){
-        for(j=0;j<COLUMNS;j++){
- 
+        for(j=0;j<COLUMNS;j++){ 
             switch(matrix[i][j].colorCode){
                 case nil:
                 break;
                 case cthulhu:
-                texture = IMG_LoadTexture(renderer, "Img/C.png");
+                texture = Type.C;
                 break;
                 case ghoulbeast:
-                texture = IMG_LoadTexture(renderer, "Img/G.png");
+				texture = Type.G;
                 break;
                 case kumonga:
-                texture = IMG_LoadTexture(renderer, "Img/K.png");
+                texture = Type.K;
                 break;
                 case seaserpent:
-                texture = IMG_LoadTexture(renderer, "Img/S.png");
+                texture = Type.S;
                 break;
             } 
             (matrix[i][j]).Pos.x = assignPosition(i,j);
@@ -271,8 +286,7 @@ void drawEggs(SDL_Renderer *renderer,Egg **matrix, int flag){
             else{
                 (matrix[i][j]).colorCode = nil;
             }
- 
-            SDL_DestroyTexture(texture);
+            texture = NULL;
         }
     }
 }
@@ -355,10 +369,14 @@ void moveBuster(){
 			}
 			move = true;
 			if(move == true){
-				reDraw(no_generated);
+				SDL_Delay( 25 );
+				reDraw(generated);
 				move = false;
 			}
 		}
+		free(buster);
+		drawBuster();
+		reDraw( generated );
 	}
 }
  
@@ -366,10 +384,10 @@ void moveBuster(){
 void reDraw(int flag){
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, background, NULL, NULL);
-	SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
-    drawEggs(renderer,matrix,flag);
 	draw_arm( renderer );
+	SDL_RenderCopy(renderer, buster->busterTexture, NULL, &(buster->Pos));
 	drawCurrentScore( renderer, score_char );
+    drawEggs(renderer,matrix,flag);
     SDL_RenderPresent(renderer);
 }
 
@@ -396,6 +414,11 @@ int randomizeBuster(){
 
 bool verifyCollide(Buster *buster, Egg **matrix){
     int i,j;
+	SDL_Rect lost;
+	lost.x = translated_pos.x;
+	lost.y = translated_pos.y - arm.segments[2].t.h/2;
+	lost.w = arm.segments[2].t.w;
+	lost.h = arm.segments[2].t.h;
     system("clear");
     printf("BX: %d\n",(buster->Pos.x + 0) );
     printf("BY: %d\n",(buster->Pos.y + 0) );
@@ -405,10 +428,32 @@ bool verifyCollide(Buster *buster, Egg **matrix){
         for (j = 0; j < COLUMNS; j++){
             if((matrix[i][j]).colorCode != 0){
                 if( SDL_HasIntersection( &(buster->Pos), &((matrix[i][j]).Pos))){
-                    printf("Collide\n");
+                    //printf("Collide\n");
                     destroyEggs(i,j,buster->typeCode,buster->typeCode-4 );
 					return true;
-                }
+				}
+            }
+
+        }
+    }
+    return false;
+}
+
+bool verifyCollideArm(Egg **matrix){
+    int i,j;
+	SDL_Rect lost;
+	lost.x = translated_pos.x;
+	lost.y = translated_pos.y - arm.segments[2].t.h/2;
+	lost.w = arm.segments[2].t.w;
+	lost.h = arm.segments[2].t.h;
+    for (i = 0; i < ROWS; i++){
+        for (j = 0; j < COLUMNS; j++){
+            if((matrix[i][j]).colorCode != 0){
+                if( SDL_HasIntersection( &(lost), &((matrix[i][j]).Pos))){
+                    printf("Collide arm\n");
+                    destroyEggs(i,j,buster->typeCode,buster->typeCode-4 );
+					return true;
+				}
             }
 
         }
@@ -432,7 +477,7 @@ void drawCurrentScore( SDL_Renderer* renderer, char* score_char ){
 
 //termina de dibujar el Score!
 
-void move_arm(){
+int move_arm(){
 	const Uint8 *press = SDL_GetKeyboardState(NULL);
 	if(press[SDL_SCANCODE_LEFT]){
 		update_angle(0, ANGLE_STEP);
@@ -462,6 +507,10 @@ void move_arm(){
         reDraw(generated);
 	}
    	move = false;
+	if(verifyCollideArm( matrix )){
+		return 0;
+	}
+	return 1;
 }
 
 void destroyEggs(int i, int j,int bustertype, int eggtype ){
@@ -566,7 +615,7 @@ void theHellisComing(int dificulty){
 
 	printf("ENTRO A LA FUNCION!\n");
 
-	while(eggsGenerated < (dificulty+2)){
+	while(eggsGenerated < (dificulty)){
 		i = rand()%ROWS;
 		j = rand()%COLUMNS;
 		printf("BUCLE\n");

@@ -10,8 +10,8 @@ int game(int dificulty){
     sdlMediaStartup(dificulty); //Startup SDL Media Resources
     allocateMatrix(&matrix); //Allocate Memory Space For The Matrix
     fillMatrix(matrix); //Fill Matrix with identifiers for Egg Types
-    drawEggs(renderer,matrix,no_generated); //Draw Eggs on renderer
-    showMatrix(matrix); //Show Matrix on Console, for testing purposesa
+	startEggTextures( renderer );
+    showMatrix(matrix); //Show Matrix on Console, for testing purposes
 	init_matrix();
 	load_images( renderer );
 	drawBuster(); //Draw The Egg Buster on screen center
@@ -35,9 +35,12 @@ int game(int dificulty){
         		default:
         			break;
         	}
-        	move_arm();
+
+    		drawEggs(renderer,matrix,no_generated); //Draw Eggs on renderer
+			if(!move_arm()){
+				isRunning = false;
+			}
 			moveBuster();
-//		    drawBuster(); //Draw The Egg Buster on screen center
 		}
 
         SDL_RenderPresent(renderer);
@@ -45,15 +48,17 @@ int game(int dificulty){
         	SDL_Delay(TICKS_PER_FRAME - (SDL_GetTicks() - start));
         }
 
-        if((currentTime/1000)%20 == 0){
-            theHellisComing(globalDificulty);
+        if((currentTime/1000)%30 == 0){
+			theHellisComing(globalDificulty);
         }
         
     }
 	score_gen( score );
 //  closeALL();
 	if( !game_over() ){
-		closeALL();
+	//	closeALL(); esto cause el core dumped bizarro 
+	//	con la generacion activada
+		SDL_DestroyWindow( window );
 	}else{
 		SDL_DestroyWindow( window );
 		score = 0; //reinicia el score a 0 para la proxima jugada

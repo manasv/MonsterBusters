@@ -7,6 +7,7 @@
 #include "Libs/guiScore.h"
 #include "Libs/gameover.h"
 #include "gameMain.c"
+#include "Libs/howto.h"
 
 #define WINDOW_H 500
 #define WINDOW_W 700
@@ -26,6 +27,7 @@ SDL_Texture* buttonTexture2 = NULL;
 SDL_Texture* buttonTexture3 = NULL;
 SDL_Texture* buttonTexture4 = NULL;
 SDL_Texture* buttonTexture5 = NULL;
+SDL_Texture* buttonTexture6 = NULL;
 SDL_Rect buttonRect = { 0, 0, 100, 50 }; //que pedazo de la imagen!
 SDL_Rect buttonPos = { 220, 310, 100, 50 }; //relativo a ventana (posicion , tamaño)
 SDL_Rect buttonRect2 = { 0, 0, 50, 50 };
@@ -36,6 +38,8 @@ SDL_Rect buttonRect4 = { 0, 0, 50, 50 };
 SDL_Rect buttonPos4 = { 429, 260, 50, 50 };
 SDL_Rect buttonRect5 = { 0, 0, 100, 50 };
 SDL_Rect buttonPos5 = { 390, 310, 100, 50 };
+SDL_Rect buttonRect6 = { 0, 0, 100, 50 };
+SDL_Rect buttonPos6 = { 300, 380, 100, 50 };
 
 SDL_Event mEvnt;
 SDL_Event keyPress;
@@ -51,7 +55,7 @@ void initMenu();
 int main( int argc, char** argv ){
 	int quit = 0;
 	int value = 0, flag[3] = { 0, 0, 0 };
-	int x, y, w, h, w2, h2, w3, h3, w4, h4, w5, h5;
+	int x, y, w, h, w2, h2, w3, h3, w4, h4, w5, h5, w6, h6;
 	w = buttonPos.w; //for later ease of use
 	h = buttonPos.h;
 	w2 = buttonPos2.w;
@@ -62,6 +66,8 @@ int main( int argc, char** argv ){
 	h4 = buttonPos4.h;
 	w5 = buttonPos5.w;
 	h5 = buttonPos5.h;
+	w6 = buttonPos6.w;
+	h6 = buttonPos6.h;
 	//initializing SDL
 	if( SDL_Init(SDL_INIT_EVERYTHING) ){
 		printf( "SDL Sucked Balls!\n" );
@@ -170,6 +176,19 @@ int main( int argc, char** argv ){
 			buttonRect5.y = STATE1;
 			drawMenu();
 		} // añadir más botones aqui si es necesario!
+		if( x > buttonPos6.x && x < buttonPos6.x + w6 && y > buttonPos6.y && y < buttonPos6.y + h6 ){
+			buttonRect6.y = STATE2;
+			if( mEvnt.button.button == SDL_BUTTON_LEFT && mEvnt.button.state == SDL_PRESSED ){
+				buttonRect6.y = STATE3;
+				printf( "HOWTOPLAY!\n" );
+				Mix_PlayChannel( -1, beep, 0 );
+				Howto();
+			}
+			drawMenu();
+		}else{
+			buttonRect6.y = STATE1;
+			drawMenu();
+		} // añadir más botones aqui si es necesario!
 	}
 }
 
@@ -206,6 +225,8 @@ void initMenu(){
 	SDL_FreeSurface( buttonSurface );
 	buttonSurface = IMG_Load( "./Img/SCORE.png" );
 	buttonTexture5 = SDL_CreateTextureFromSurface( render, buttonSurface );
+	buttonSurface = IMG_Load( "./Img/HOW.png" );
+	buttonTexture6 = SDL_CreateTextureFromSurface( render, buttonSurface );
 	SDL_FreeSurface( buttonSurface );
 	drawMenu();
 }
@@ -218,5 +239,6 @@ void drawMenu( void ){
 	SDL_RenderCopy( render, buttonTexture3, &buttonRect3, &buttonPos3 );
 	SDL_RenderCopy( render, buttonTexture4, &buttonRect4, &buttonPos4 );
 	SDL_RenderCopy( render, buttonTexture5, &buttonRect5, &buttonPos5 );
+	SDL_RenderCopy( render, buttonTexture6, &buttonRect6, &buttonPos6 );
 	SDL_RenderPresent( render ); 
 }
